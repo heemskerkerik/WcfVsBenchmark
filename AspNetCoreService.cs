@@ -52,6 +52,8 @@ namespace AspNetCoreWcfBenchmark
         {
             services.AddMvc(opt =>
                             {
+                                opt.InputFormatters.RemoveType<JsonPatchInputFormatter>();
+
                                 var jsonInputFormatter = opt.InputFormatters.OfType<JsonInputFormatter>().First();
                                 var jsonOutputFormatter = opt.OutputFormatters.OfType<JsonOutputFormatter>().First();
 
