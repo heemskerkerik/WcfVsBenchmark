@@ -23,7 +23,7 @@ namespace AspNetCoreWcfBenchmark
             _app.Dispose();
         }
 
-        public WebApiService(int port, MessageFormat format, int itemCount, bool sendItems, bool receiveItems)
+        public WebApiService(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
             : base(port, format, itemCount, sendItems, receiveItems)
         {
             _port = port;
@@ -31,15 +31,8 @@ namespace AspNetCoreWcfBenchmark
         }
 
         private readonly int _port;
-        private readonly MessageFormat _format;
+        private readonly SerializerType _format;
         private IDisposable _app;
-    }
-
-    public enum MessageFormat
-    {
-        Xml,
-        Json,
-        MessagePack
     }
 
     public class WebApiController: ApiController
@@ -62,13 +55,13 @@ namespace AspNetCoreWcfBenchmark
 
             switch(_format)
             {
-                case MessageFormat.Xml:
+                case SerializerType.Xml:
                     config.Formatters.Add(new XmlMediaTypeFormatter());
                     break;
-                case MessageFormat.Json:
+                case SerializerType.JsonNet:
                     config.Formatters.Add(new JsonMediaTypeFormatter());
                     break;
-                case MessageFormat.MessagePack:
+                case SerializerType.MessagePack:
                     config.Formatters.Add(new MessagePackMediaTypeFormatter());
                     break;
                 default:
@@ -78,11 +71,11 @@ namespace AspNetCoreWcfBenchmark
             app.UseWebApi(config);
         }
 
-        public WebApiStartup(MessageFormat format)
+        public WebApiStartup(SerializerType format)
         {
             _format = format;
         }
 
-        private readonly MessageFormat _format;
+        private readonly SerializerType _format;
     }
 }

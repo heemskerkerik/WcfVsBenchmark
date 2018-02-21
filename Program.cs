@@ -65,7 +65,7 @@ namespace AspNetCoreWcfBenchmark
 
             _webApiJsonNetService = new WebApiService(
                 port: 9002,
-                format: MessageFormat.Json,
+                format: SerializerType.JsonNet,
                 itemCount: ItemCount,
                 sendItems: SendItems,
                 receiveItems: ReceiveItems
@@ -74,7 +74,7 @@ namespace AspNetCoreWcfBenchmark
 
             _webApiMessagePackService = new WebApiService(
                 port: 9009,
-                format: MessageFormat.MessagePack,
+                format: SerializerType.MessagePack,
                 itemCount: ItemCount,
                 sendItems: SendItems,
                 receiveItems: ReceiveItems
@@ -83,7 +83,7 @@ namespace AspNetCoreWcfBenchmark
 
             _aspNetCoreJsonNetService = new AspNetCoreService(
                 port: 9004,
-                format:MessageFormat.Json,
+                format:SerializerType.JsonNet,
                 itemCount: ItemCount,
                 sendItems: SendItems,
                 receiveItems: ReceiveItems
@@ -92,7 +92,7 @@ namespace AspNetCoreWcfBenchmark
 
             _aspNetCoreMessagePackService = new AspNetCoreService(
                 port: 9010,
-                format: MessageFormat.MessagePack,
+                format: SerializerType.MessagePack,
                 itemCount: ItemCount,
                 sendItems: SendItems,
                 receiveItems: ReceiveItems

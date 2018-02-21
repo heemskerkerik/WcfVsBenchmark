@@ -34,7 +34,7 @@ namespace AspNetCoreWcfBenchmark
             _host?.StopAsync().Wait();
         }
 
-        public AspNetCoreService(int port, MessageFormat format, int itemCount, bool sendItems, bool receiveItems)
+        public AspNetCoreService(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
             : base(port, format, itemCount, sendItems, receiveItems)
         {
             _port = port;
@@ -42,7 +42,7 @@ namespace AspNetCoreWcfBenchmark
         }
 
         private readonly int _port;
-        private readonly MessageFormat _format;
+        private readonly SerializerType _format;
         private IWebHost _host;
     }
 
@@ -57,7 +57,7 @@ namespace AspNetCoreWcfBenchmark
                                 opt.OutputFormatters.RemoveType<StringOutputFormatter>();
                                 opt.OutputFormatters.RemoveType<StreamOutputFormatter>();
 
-                                if(_format == MessageFormat.MessagePack)
+                                if(_format == SerializerType.MessagePack)
                                 {
                                     opt.InputFormatters.RemoveType<JsonInputFormatter>();
                                     opt.InputFormatters.Add(new MessagePackInputFormatter());
@@ -73,12 +73,12 @@ namespace AspNetCoreWcfBenchmark
             app.UseMvc();
         }
 
-        public AspNetCoreStartup(MessageFormat format)
+        public AspNetCoreStartup(SerializerType format)
         {
             _format = format;
         }
 
-        private readonly MessageFormat _format;
+        private readonly SerializerType _format;
     }
 
     public class AspNetCoreController: Controller

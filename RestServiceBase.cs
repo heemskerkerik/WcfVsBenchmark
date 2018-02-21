@@ -34,7 +34,7 @@ namespace AspNetCoreWcfBenchmark
             return await response.Content.ReadAsAsync<IReadOnlyCollection<Item>>(new[] { _messagePackMediaTypeFormatter });
         }
 
-        protected RestServiceBase(int port, MessageFormat format, int itemCount, bool sendItems, bool receiveItems)
+        protected RestServiceBase(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
         {
             _port = port;
             _format = format;
@@ -51,9 +51,9 @@ namespace AspNetCoreWcfBenchmark
         {
             switch(_format)
             {
-                case MessageFormat.Json:
+                case SerializerType.JsonNet:
                     return InvokeJsonNet;
-                case MessageFormat.MessagePack:
+                case SerializerType.MessagePack:
                     return InvokeMessagePack;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_format), _format, null);
@@ -61,7 +61,7 @@ namespace AspNetCoreWcfBenchmark
         }
 
         private readonly int _port;
-        private readonly MessageFormat _format;
+        private readonly SerializerType _format;
         private readonly Item[] _itemsToSend;
         private readonly int _itemCountToRequest;
         private readonly MessagePackMediaTypeFormatter _messagePackMediaTypeFormatter = new MessagePackMediaTypeFormatter();
