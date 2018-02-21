@@ -24,12 +24,9 @@
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="BenchmarkDotNet.Artifacts\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="BenchmarkDotNet.Artifacts\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove=".gitignore" />
   </ItemGroup>
 </Project>
