@@ -11,7 +11,7 @@ namespace AspNetCoreWcfBenchmark
     {
         protected void InitializeClients()
         {
-            _client.BaseAddress = new Uri($"http://localhost.fiddler:{_port}");
+            _client.BaseAddress = new Uri($"http://localhost:{_port}");
         }
 
         public Task<IReadOnlyCollection<Item>> Invoke()
