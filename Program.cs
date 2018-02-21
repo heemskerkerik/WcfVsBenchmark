@@ -55,7 +55,7 @@ namespace AspNetCoreWcfBenchmark
         public void Initialize()
         {
             _textWcfService = new WcfService(
-                port: 9000,
+                port: 9001,
                 encoding: WSMessageEncoding.Text,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -73,7 +73,7 @@ namespace AspNetCoreWcfBenchmark
             _webApiJsonNetService.Start();
 
             _webApiMessagePackService = new WebApiService(
-                port: 9009,
+                port: 9003,
                 format: SerializerType.MessagePack,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -81,8 +81,17 @@ namespace AspNetCoreWcfBenchmark
             );
             _webApiMessagePackService.Start();
 
-            _aspNetCoreJsonNetService = new AspNetCoreService(
+            _webApiXmlService = new WebApiService(
                 port: 9004,
+                format: SerializerType.Xml,
+                itemCount: ItemCount,
+                sendItems: SendItems,
+                receiveItems: ReceiveItems
+            );
+            _webApiXmlService.Start();
+
+            _aspNetCoreJsonNetService = new AspNetCoreService(
+                port: 9005,
                 format:SerializerType.JsonNet,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -91,13 +100,22 @@ namespace AspNetCoreWcfBenchmark
             _aspNetCoreJsonNetService.Start();
 
             _aspNetCoreMessagePackService = new AspNetCoreService(
-                port: 9010,
+                port: 9006,
                 format: SerializerType.MessagePack,
                 itemCount: ItemCount,
                 sendItems: SendItems,
                 receiveItems: ReceiveItems
             );
             _aspNetCoreMessagePackService.Start();
+
+            _aspNetCoreXmlService = new AspNetCoreService(
+                port: 9007,
+                format: SerializerType.MessagePack,
+                itemCount: ItemCount,
+                sendItems: SendItems,
+                receiveItems: ReceiveItems
+            );
+            _aspNetCoreXmlService.Start();
         }
 
         [GlobalCleanup]
@@ -106,8 +124,10 @@ namespace AspNetCoreWcfBenchmark
             _textWcfService?.Stop();
             _webApiJsonNetService?.Stop();
             _webApiMessagePackService?.Stop();
+            _webApiXmlService?.Stop();
             _aspNetCoreJsonNetService?.Stop();
             _aspNetCoreMessagePackService?.Stop();
+            _aspNetCoreXmlService?.Stop();
         }
 
         [Benchmark]
@@ -129,6 +149,12 @@ namespace AspNetCoreWcfBenchmark
         }
 
         [Benchmark]
+        public Task<IReadOnlyCollection<Item>> WebApiXml()
+        {
+            return _webApiXmlService.Invoke();
+        }
+
+        [Benchmark]
         public Task<IReadOnlyCollection<Item>> AspNetCoreJsonNet()
         {
             return _aspNetCoreJsonNetService.Invoke();
@@ -140,10 +166,18 @@ namespace AspNetCoreWcfBenchmark
             return _aspNetCoreMessagePackService.Invoke();
         }
 
+        [Benchmark]
+        public Task<IReadOnlyCollection<Item>> AspNetCoreXml()
+        {
+            return _aspNetCoreXmlService.Invoke();
+        }
+
         private WcfService _textWcfService;
         private WebApiService _webApiJsonNetService;
         private WebApiService _webApiMessagePackService;
+        private WebApiService _webApiXmlService;
         private AspNetCoreService _aspNetCoreJsonNetService;
         private AspNetCoreService _aspNetCoreMessagePackService;
+        private AspNetCoreService _aspNetCoreXmlService;
     }
 }

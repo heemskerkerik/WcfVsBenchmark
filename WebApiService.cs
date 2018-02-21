@@ -56,7 +56,10 @@ namespace AspNetCoreWcfBenchmark
             switch(_format)
             {
                 case SerializerType.Xml:
-                    config.Formatters.Add(new XmlMediaTypeFormatter());
+                    config.Formatters.Add(new XmlMediaTypeFormatter
+                                          {
+                                              UseXmlSerializer = true,
+                                          });
                     break;
                 case SerializerType.JsonNet:
                     config.Formatters.Add(new JsonMediaTypeFormatter());

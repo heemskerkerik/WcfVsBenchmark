@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
 namespace AspNetCoreWcfBenchmark
@@ -10,7 +11,7 @@ namespace AspNetCoreWcfBenchmark
     {
         protected void InitializeClients()
         {
-            _client.BaseAddress = new Uri($"http://localhost:{_port}");
+            _client.BaseAddress = new Uri($"http://localhost.fiddler:{_port}");
         }
 
         public Task<IReadOnlyCollection<Item>> Invoke()
@@ -34,6 +35,14 @@ namespace AspNetCoreWcfBenchmark
             return await response.Content.ReadAsAsync<IReadOnlyCollection<Item>>(new[] { _messagePackMediaTypeFormatter });
         }
 
+        private async Task<IReadOnlyCollection<Item>> InvokeXml()
+        {
+            var response = await _client.PostAsync($"api/operation?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<Item>), _itemsToSend, _xmlMediaTypeFormatter));
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsAsync<Item[]>(new[] { _xmlMediaTypeFormatter });
+        }
+
         protected RestServiceBase(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
         {
             _port = port;
@@ -51,6 +60,8 @@ namespace AspNetCoreWcfBenchmark
         {
             switch(_format)
             {
+                case SerializerType.Xml:
+                    return InvokeXml;
                 case SerializerType.JsonNet:
                     return InvokeJsonNet;
                 case SerializerType.MessagePack:
@@ -65,6 +76,11 @@ namespace AspNetCoreWcfBenchmark
         private readonly Item[] _itemsToSend;
         private readonly int _itemCountToRequest;
         private readonly MessagePackMediaTypeFormatter _messagePackMediaTypeFormatter = new MessagePackMediaTypeFormatter();
+
+        private readonly XmlMediaTypeFormatter _xmlMediaTypeFormatter = new XmlMediaTypeFormatter
+                                                                        {
+                                                                            UseXmlSerializer = true,
+                                                                        };
 
         private readonly HttpClient _client = new HttpClient();
         private readonly Func<Task<IReadOnlyCollection<Item>>> _invokeFunc;

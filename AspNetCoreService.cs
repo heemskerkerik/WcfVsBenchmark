@@ -52,18 +52,28 @@ namespace AspNetCoreWcfBenchmark
         {
             services.AddMvc(opt =>
                             {
-                                opt.InputFormatters.RemoveType<JsonPatchInputFormatter>();
-                                opt.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
-                                opt.OutputFormatters.RemoveType<StringOutputFormatter>();
-                                opt.OutputFormatters.RemoveType<StreamOutputFormatter>();
+                                var jsonInputFormatter = opt.InputFormatters.OfType<JsonInputFormatter>().First();
+                                var jsonOutputFormatter = opt.OutputFormatters.OfType<JsonOutputFormatter>().First();
 
-                                if(_format == SerializerType.MessagePack)
+                                opt.InputFormatters.Clear();
+                                opt.OutputFormatters.Clear();
+
+                                switch(_format)
                                 {
-                                    opt.InputFormatters.RemoveType<JsonInputFormatter>();
-                                    opt.InputFormatters.Add(new MessagePackInputFormatter());
-
-                                    opt.OutputFormatters.RemoveType<JsonOutputFormatter>();
-                                    opt.OutputFormatters.Add(new MessagePackOutputFormatter());
+                                    case SerializerType.Xml:
+                                        opt.InputFormatters.Add(new XmlSerializerInputFormatter());
+                                        opt.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                                        break;
+                                    case SerializerType.JsonNet:
+                                        opt.InputFormatters.Add(jsonInputFormatter);
+                                        opt.OutputFormatters.Add(jsonOutputFormatter);
+                                        break;
+                                    case SerializerType.MessagePack:
+                                        opt.InputFormatters.Add(new MessagePackInputFormatter());
+                                        opt.OutputFormatters.Add(new MessagePackOutputFormatter());
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
                                 }
                             });
         }
