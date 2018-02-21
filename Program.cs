@@ -36,7 +36,6 @@ namespace AspNetCoreWcfBenchmark
                 Add(MemoryDiagnoser.Default.GetColumnProvider());
                 Add(EnvironmentAnalyser.Default);
                 Add(MemoryDiagnoser.Default);
-                Add(JitOptimizationsValidator.DontFailOnError);
                 Add(MarkdownExporter.Default);
                 UnionRule = ConfigUnionRule.AlwaysUseLocal;
             }
@@ -54,8 +53,10 @@ namespace AspNetCoreWcfBenchmark
         [GlobalSetup]
         public void Initialize()
         {
+            int port = 9001;
+
             _textWcfService = new WcfService(
-                port: 9001,
+                port: port++,
                 encoding: WSMessageEncoding.Text,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -64,7 +65,7 @@ namespace AspNetCoreWcfBenchmark
             _textWcfService.Start();
 
             _webApiJsonNetService = new WebApiService(
-                port: 9002,
+                port: port++,
                 format: SerializerType.JsonNet,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -73,7 +74,7 @@ namespace AspNetCoreWcfBenchmark
             _webApiJsonNetService.Start();
 
             _webApiMessagePackService = new WebApiService(
-                port: 9003,
+                port: port++,
                 format: SerializerType.MessagePack,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -82,7 +83,7 @@ namespace AspNetCoreWcfBenchmark
             _webApiMessagePackService.Start();
 
             _webApiXmlService = new WebApiService(
-                port: 9004,
+                port: port++,
                 format: SerializerType.Xml,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -90,8 +91,17 @@ namespace AspNetCoreWcfBenchmark
             );
             _webApiXmlService.Start();
 
+            _webApiUtf8JsonService = new WebApiService(
+                port: port++,
+                format: SerializerType.Utf8Json,
+                itemCount: ItemCount,
+                sendItems: SendItems,
+                receiveItems: ReceiveItems
+            );
+            _webApiUtf8JsonService.Start();
+
             _aspNetCoreJsonNetService = new AspNetCoreService(
-                port: 9005,
+                port: port++,
                 format:SerializerType.JsonNet,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -100,7 +110,7 @@ namespace AspNetCoreWcfBenchmark
             _aspNetCoreJsonNetService.Start();
 
             _aspNetCoreMessagePackService = new AspNetCoreService(
-                port: 9006,
+                port: port++,
                 format: SerializerType.MessagePack,
                 itemCount: ItemCount,
                 sendItems: SendItems,
@@ -109,13 +119,22 @@ namespace AspNetCoreWcfBenchmark
             _aspNetCoreMessagePackService.Start();
 
             _aspNetCoreXmlService = new AspNetCoreService(
-                port: 9007,
-                format: SerializerType.MessagePack,
+                port: port++,
+                format: SerializerType.Xml,
                 itemCount: ItemCount,
                 sendItems: SendItems,
                 receiveItems: ReceiveItems
             );
             _aspNetCoreXmlService.Start();
+
+            _aspNetCoreUtf8JsonService = new AspNetCoreService(
+                port: port++,
+                format: SerializerType.Utf8Json,
+                itemCount: ItemCount,
+                sendItems: SendItems,
+                receiveItems: ReceiveItems
+            );
+            _aspNetCoreUtf8JsonService.Start();
         }
 
         [GlobalCleanup]
@@ -125,9 +144,11 @@ namespace AspNetCoreWcfBenchmark
             _webApiJsonNetService?.Stop();
             _webApiMessagePackService?.Stop();
             _webApiXmlService?.Stop();
+            _webApiUtf8JsonService?.Stop();
             _aspNetCoreJsonNetService?.Stop();
             _aspNetCoreMessagePackService?.Stop();
             _aspNetCoreXmlService?.Stop();
+            _aspNetCoreUtf8JsonService?.Stop();
         }
 
         [Benchmark]
@@ -155,6 +176,12 @@ namespace AspNetCoreWcfBenchmark
         }
 
         [Benchmark]
+        public Task<IReadOnlyCollection<Item>> WebApiUtf8Json()
+        {
+            return _webApiUtf8JsonService.Invoke();
+        }
+
+        [Benchmark]
         public Task<IReadOnlyCollection<Item>> AspNetCoreJsonNet()
         {
             return _aspNetCoreJsonNetService.Invoke();
@@ -172,12 +199,20 @@ namespace AspNetCoreWcfBenchmark
             return _aspNetCoreXmlService.Invoke();
         }
 
+        [Benchmark]
+        public Task<IReadOnlyCollection<Item>> AspNetCoreUtf8Json()
+        {
+            return _aspNetCoreUtf8JsonService.Invoke();
+        }
+
         private WcfService _textWcfService;
         private WebApiService _webApiJsonNetService;
         private WebApiService _webApiMessagePackService;
         private WebApiService _webApiXmlService;
+        private WebApiService _webApiUtf8JsonService;
         private AspNetCoreService _aspNetCoreJsonNetService;
         private AspNetCoreService _aspNetCoreMessagePackService;
         private AspNetCoreService _aspNetCoreXmlService;
+        private AspNetCoreService _aspNetCoreUtf8JsonService;
     }
 }

@@ -4,6 +4,7 @@
     {
         Xml,
         JsonNet,
-        MessagePack
+        MessagePack,
+        Utf8Json
     }
 }

@@ -74,6 +74,10 @@ namespace AspNetCoreWcfBenchmark
                                         opt.InputFormatters.Add(new MessagePackInputFormatter());
                                         opt.OutputFormatters.Add(new MessagePackOutputFormatter());
                                         break;
+                                    case SerializerType.Utf8Json:
+                                        opt.InputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonInputFormatter());
+                                        opt.OutputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonOutputFormatter());
+                                        break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
                                 }

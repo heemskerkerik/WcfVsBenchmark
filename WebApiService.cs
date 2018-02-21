@@ -67,6 +67,9 @@ namespace AspNetCoreWcfBenchmark
                 case SerializerType.MessagePack:
                     config.Formatters.Add(new MessagePackMediaTypeFormatter());
                     break;
+                case SerializerType.Utf8Json:
+                    config.Formatters.Add(new Utf8JsonMediaTypeFormatter());
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

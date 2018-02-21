@@ -43,6 +43,14 @@ namespace AspNetCoreWcfBenchmark
             return await response.Content.ReadAsAsync<Item[]>(new[] { _xmlMediaTypeFormatter });
         }
 
+        private async Task<IReadOnlyCollection<Item>> InvokeUtf8Json()
+        {
+            var response = await _client.PostAsync($"api/operation?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<Item>), _itemsToSend, _utf8JsonMediaTypeFormatter));
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsAsync<Item[]>(new[] { _utf8JsonMediaTypeFormatter });
+        }
+
         protected RestServiceBase(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
         {
             _port = port;
@@ -66,6 +74,8 @@ namespace AspNetCoreWcfBenchmark
                     return InvokeJsonNet;
                 case SerializerType.MessagePack:
                     return InvokeMessagePack;
+                case SerializerType.Utf8Json:
+                    return InvokeUtf8Json;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_format), _format, null);
             }
@@ -76,6 +86,7 @@ namespace AspNetCoreWcfBenchmark
         private readonly Item[] _itemsToSend;
         private readonly int _itemCountToRequest;
         private readonly MessagePackMediaTypeFormatter _messagePackMediaTypeFormatter = new MessagePackMediaTypeFormatter();
+        private readonly Utf8JsonMediaTypeFormatter _utf8JsonMediaTypeFormatter = new Utf8JsonMediaTypeFormatter();
 
         private readonly XmlMediaTypeFormatter _xmlMediaTypeFormatter = new XmlMediaTypeFormatter
                                                                         {
