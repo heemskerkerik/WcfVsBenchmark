@@ -6,7 +6,7 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class Utf8JsonMediaTypeFormatter<T>: MediaTypeFormatter
     {

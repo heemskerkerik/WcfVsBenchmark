@@ -3,7 +3,7 @@ using System.Linq;
 
 using AutoFixture;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     internal static class Cache
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using MessagePack;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class MessagePackMediaTypeFormatter<T>: MediaTypeFormatter
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using AutoFixture;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class RestServiceBase<T>
         where T: class, new()

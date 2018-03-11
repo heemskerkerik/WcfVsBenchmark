@@ -5,7 +5,7 @@ using System.ServiceModel.Web;
 
 using AutoFixture;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class WcfService<T>
         where T: class, new()

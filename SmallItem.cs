@@ -2,7 +2,7 @@
 
 using MessagePack;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     [MessagePackObject]
     public class SmallItem

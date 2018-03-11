@@ -1,4 +1,4 @@
-﻿namespace AspNetCoreWcfBenchmark
+﻿namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public enum SerializerType
     {

@@ -7,7 +7,7 @@ using Microsoft.Owin.Hosting;
 
 using Owin;
 
-namespace AspNetCoreWcfBenchmark
+namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class WebApiService<T>: RestServiceBase<T>
         where T: class, new()
