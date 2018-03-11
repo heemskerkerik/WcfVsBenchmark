@@ -9,11 +9,12 @@ using Owin;
 
 namespace AspNetCoreWcfBenchmark
 {
-    public class WebApiService: RestServiceBase
+    public class WebApiService<T>: RestServiceBase<T>
+        where T: class, new()
     {
         public void Start()
         {
-            var startup = new WebApiStartup(_format);
+            var startup = new WebApiStartup<T>(_format);
             _app = WebApp.Start($"http://localhost:{_port}", startup.Configuration);
             InitializeClients();
         }
@@ -37,14 +38,20 @@ namespace AspNetCoreWcfBenchmark
 
     public class WebApiController: ApiController
     {
-        [HttpPost, Route("api/operation")]
-        public Item[] Operation([FromBody] Item[] items, int itemCount)
+        [HttpPost, Route("api/operation/SmallItem")]
+        public SmallItem[] ItemOperation([FromBody] SmallItem[] items, int itemCount)
         {
-            return Enumerable.Range(0, itemCount).Select(_ => new Item { Id = Guid.NewGuid() }).ToArray();
+            return Cache.SmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost, Route("api/operation/LargeItem")]
+        public LargeItem[] LargeItemOperation([FromBody] LargeItem[] items, int itemCount)
+        {
+            return Cache.LargeItems.Take(itemCount).ToArray();
         }
     }
 
-    public class WebApiStartup
+    public class WebApiStartup<T>
     {
         public void Configuration(IAppBuilder app)
         {
@@ -65,10 +72,10 @@ namespace AspNetCoreWcfBenchmark
                     config.Formatters.Add(new JsonMediaTypeFormatter());
                     break;
                 case SerializerType.MessagePack:
-                    config.Formatters.Add(new MessagePackMediaTypeFormatter());
+                    config.Formatters.Add(new MessagePackMediaTypeFormatter<T>());
                     break;
                 case SerializerType.Utf8Json:
-                    config.Formatters.Add(new Utf8JsonMediaTypeFormatter());
+                    config.Formatters.Add(new Utf8JsonMediaTypeFormatter<T>());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

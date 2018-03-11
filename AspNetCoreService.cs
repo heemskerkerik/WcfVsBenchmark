@@ -12,14 +12,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCoreWcfBenchmark
 {
-    public class AspNetCoreService: RestServiceBase
+    public class AspNetCoreService<T>: RestServiceBase<T>
+        where T: class, new()
     {
         public void Start()
         {
-            var startup = new AspNetCoreStartup(_format);
+            var startup = new AspNetCoreStartup<T>(_format);
 
             _host = new WebHostBuilder()
-                   .UseKestrel()
+                   .UseKestrel(opt => opt.Limits.MaxRequestBodySize = 180000000)
                    .ConfigureServices(startup.ConfigureServices)
                    .Configure(startup.Configure)
                    .UseUrls($"http://localhost:{_port}")
@@ -46,7 +47,7 @@ namespace AspNetCoreWcfBenchmark
         private IWebHost _host;
     }
 
-    public class AspNetCoreStartup
+    public class AspNetCoreStartup<T>
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -71,7 +72,7 @@ namespace AspNetCoreWcfBenchmark
                                         opt.OutputFormatters.Add(jsonOutputFormatter);
                                         break;
                                     case SerializerType.MessagePack:
-                                        opt.InputFormatters.Add(new MessagePackInputFormatter());
+                                        opt.InputFormatters.Add(new MessagePackInputFormatter<T>());
                                         opt.OutputFormatters.Add(new MessagePackOutputFormatter());
                                         break;
                                     case SerializerType.Utf8Json:
@@ -99,18 +100,24 @@ namespace AspNetCoreWcfBenchmark
 
     public class AspNetCoreController: Controller
     {
-        [HttpPost("api/operation")]
-        public Item[] Operation([FromBody] Item[] items, int itemCount)
+        [HttpPost("api/operation/SmallItem")]
+        public SmallItem[] Operation([FromBody] SmallItem[] items, int itemCount)
         {
-            return Enumerable.Range(0, itemCount).Select(_ => new Item { Id = Guid.NewGuid() }).ToArray();
+            return Cache.SmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost("api/operation/LargeItem")]
+        public LargeItem[] Operation([FromBody] LargeItem[] items, int itemCount)
+        {
+            return Cache.LargeItems.Take(itemCount).ToArray();
         }
     }
 
-    public class MessagePackInputFormatter: InputFormatter
+    public class MessagePackInputFormatter<T>: InputFormatter
     {
         public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
         {
-            var items = await MessagePackSerializer.DeserializeAsync<Item[]>(context.HttpContext.Request.Body);
+            var items = await MessagePackSerializer.DeserializeAsync<T[]>(context.HttpContext.Request.Body);
 
             return InputFormatterResult.Success(items);
         }

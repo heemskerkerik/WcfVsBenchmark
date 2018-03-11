@@ -3,20 +3,23 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 
+using AutoFixture;
+
 namespace AspNetCoreWcfBenchmark
 {
-    public class WcfService
+    public class WcfService<T>
+        where T: class, new()
     {
         public void Start()
         {
             _host = new WebServiceHost(typeof(WcfServiceImpl), new Uri($"http://localhost:{_port}/"));
-            _host.AddServiceEndpoint(typeof(IWcfService), new BasicHttpBinding { MessageEncoding = _encoding, MaxReceivedMessageSize = 1024 * 1024 * 1024 }, "");
+            _host.AddServiceEndpoint(typeof(IWcfService<T>), new BasicHttpBinding { MessageEncoding = _encoding, MaxReceivedMessageSize = 1024 * 1024 * 1024 }, "");
 
             _host.Open();
-            _channelFactory = new ChannelFactory<IWcfService>(new BasicHttpBinding { MessageEncoding = _encoding, MaxReceivedMessageSize = 1024 * 1024 * 1024 }, $"http://localhost:{_port}");
+            _channelFactory = new ChannelFactory<IWcfService<T>>(new BasicHttpBinding { MessageEncoding = _encoding, MaxReceivedMessageSize = 1024 * 1024 * 1024 }, $"http://localhost:{_port}");
         }
 
-        public Item[] Invoke()
+        public T[] Invoke()
         {
             var channel = _channelFactory.CreateChannel();
 
@@ -34,32 +37,39 @@ namespace AspNetCoreWcfBenchmark
             _port = port;
             _encoding = encoding;
 
+            var fixture = new Fixture();
+
             _itemsToSend = sendItems
-                               ? Enumerable.Range(0, itemCount).Select(_ => new Item { Id = Guid.NewGuid() }).ToArray()
-                               : new Item[0];
+                               ? Cache.Get<T>().Take(itemCount).ToArray()
+                               : new T[0];
             _itemCountToRequest = receiveItems ? itemCount : 0;
         }
 
         private readonly int _port;
         private readonly WSMessageEncoding _encoding;
-        private readonly Item[] _itemsToSend;
+        private readonly T[] _itemsToSend;
         private readonly int _itemCountToRequest;
         private WebServiceHost _host;
-        private ChannelFactory<IWcfService> _channelFactory;
+        private ChannelFactory<IWcfService<T>> _channelFactory;
     }
 
     [ServiceContract]
-    public interface IWcfService
+    public interface IWcfService<T>
     {
         [OperationContract]
-        Item[] Operation(Item[] items, int itemCount);
+        T[] Operation(T[] items, int itemCount);
     }
 
-    public class WcfServiceImpl: IWcfService
+    public class WcfServiceImpl: IWcfService<SmallItem>, IWcfService<LargeItem>
     {
-        public Item[] Operation(Item[] items, int itemCount)
+        public SmallItem[] Operation(SmallItem[] items, int itemCount)
         {
-            return Enumerable.Range(0, itemCount).Select(_ => new Item { Id = Guid.NewGuid() }).ToArray();
+            return Cache.SmallItems.Take(itemCount).ToArray();
+        }
+
+        public LargeItem[] Operation(LargeItem[] items, int itemCount)
+        {
+            return Cache.LargeItems.Take(itemCount).ToArray();
         }
     }
 }

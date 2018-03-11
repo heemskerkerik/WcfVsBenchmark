@@ -5,50 +5,53 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
+using AutoFixture;
+
 namespace AspNetCoreWcfBenchmark
 {
-    public class RestServiceBase
+    public class RestServiceBase<T>
+        where T: class, new()
     {
         protected void InitializeClients()
         {
             _client.BaseAddress = new Uri($"http://localhost:{_port}");
         }
 
-        public Task<IReadOnlyCollection<Item>> Invoke()
+        public Task<IReadOnlyCollection<T>> Invoke()
         {
             return _invokeFunc();
         }
 
-        private async Task<IReadOnlyCollection<Item>> InvokeJsonNet()
+        private async Task<IReadOnlyCollection<T>> InvokeJsonNet()
         {
-            var response = await _client.PostAsJsonAsync($"api/operation?itemCount={_itemCountToRequest}", _itemsToSend);
+            var response = await _client.PostAsJsonAsync($"api/operation/{typeof(T).Name}?itemCount={_itemCountToRequest}", _itemsToSend);
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsAsync<Item[]>();
+            return await response.Content.ReadAsAsync<T[]>();
         }
 
-        private async Task<IReadOnlyCollection<Item>> InvokeMessagePack()
+        private async Task<IReadOnlyCollection<T>> InvokeMessagePack()
         {
-            var response = await _client.PostAsync($"api/operation?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<Item>), _itemsToSend, _messagePackMediaTypeFormatter));
+            var response = await _client.PostAsync($"api/operation/{typeof(T).Name}?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<T>), _itemsToSend, _messagePackMediaTypeFormatter));
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsAsync<IReadOnlyCollection<Item>>(new[] { _messagePackMediaTypeFormatter });
+            return await response.Content.ReadAsAsync<IReadOnlyCollection<T>>(new[] { _messagePackMediaTypeFormatter });
         }
 
-        private async Task<IReadOnlyCollection<Item>> InvokeXml()
+        private async Task<IReadOnlyCollection<T>> InvokeXml()
         {
-            var response = await _client.PostAsync($"api/operation?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<Item>), _itemsToSend, _xmlMediaTypeFormatter));
+            var response = await _client.PostAsync($"api/operation/{typeof(T).Name}?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<T>), _itemsToSend, _xmlMediaTypeFormatter));
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsAsync<Item[]>(new[] { _xmlMediaTypeFormatter });
+            return await response.Content.ReadAsAsync<T[]>(new[] { _xmlMediaTypeFormatter });
         }
 
-        private async Task<IReadOnlyCollection<Item>> InvokeUtf8Json()
+        private async Task<IReadOnlyCollection<T>> InvokeUtf8Json()
         {
-            var response = await _client.PostAsync($"api/operation?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<Item>), _itemsToSend, _utf8JsonMediaTypeFormatter));
+            var response = await _client.PostAsync($"api/operation/{typeof(T).Name}?itemCount={_itemCountToRequest}", new ObjectContent(typeof(IReadOnlyCollection<T>), _itemsToSend, _utf8JsonMediaTypeFormatter));
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsAsync<Item[]>(new[] { _utf8JsonMediaTypeFormatter });
+            return await response.Content.ReadAsAsync<T[]>(new[] { _utf8JsonMediaTypeFormatter });
         }
 
         protected RestServiceBase(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
@@ -56,15 +59,17 @@ namespace AspNetCoreWcfBenchmark
             _port = port;
             _format = format;
 
+            var fixture = new Fixture();
+
             _itemsToSend = sendItems
-                               ? Enumerable.Range(0, itemCount).Select(_ => new Item { Id = Guid.NewGuid() }).ToArray()
-                               : new Item[0];
+                               ? Cache.Get<T>().Take(itemCount).ToArray()
+                               : new T[0];
             _itemCountToRequest = receiveItems ? itemCount : 0;
 
             _invokeFunc = GetInvokeFunction();
         }
 
-        private Func<Task<IReadOnlyCollection<Item>>> GetInvokeFunction()
+        private Func<Task<IReadOnlyCollection<T>>> GetInvokeFunction()
         {
             switch(_format)
             {
@@ -83,10 +88,10 @@ namespace AspNetCoreWcfBenchmark
 
         private readonly int _port;
         private readonly SerializerType _format;
-        private readonly Item[] _itemsToSend;
+        private readonly T[] _itemsToSend;
         private readonly int _itemCountToRequest;
-        private readonly MessagePackMediaTypeFormatter _messagePackMediaTypeFormatter = new MessagePackMediaTypeFormatter();
-        private readonly Utf8JsonMediaTypeFormatter _utf8JsonMediaTypeFormatter = new Utf8JsonMediaTypeFormatter();
+        private readonly MessagePackMediaTypeFormatter<T> _messagePackMediaTypeFormatter = new MessagePackMediaTypeFormatter<T>();
+        private readonly Utf8JsonMediaTypeFormatter<T> _utf8JsonMediaTypeFormatter = new Utf8JsonMediaTypeFormatter<T>();
 
         private readonly XmlMediaTypeFormatter _xmlMediaTypeFormatter = new XmlMediaTypeFormatter
                                                                         {
@@ -94,6 +99,6 @@ namespace AspNetCoreWcfBenchmark
                                                                         };
 
         private readonly HttpClient _client = new HttpClient();
-        private readonly Func<Task<IReadOnlyCollection<Item>>> _invokeFunc;
+        private readonly Func<Task<IReadOnlyCollection<T>>> _invokeFunc;
     }
 }

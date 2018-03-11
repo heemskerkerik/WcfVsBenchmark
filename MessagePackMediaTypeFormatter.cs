@@ -10,7 +10,7 @@ using MessagePack;
 
 namespace AspNetCoreWcfBenchmark
 {
-    public class MessagePackMediaTypeFormatter: MediaTypeFormatter
+    public class MessagePackMediaTypeFormatter<T>: MediaTypeFormatter
     {
         public override bool CanReadType(Type type)
         {
@@ -22,14 +22,17 @@ namespace AspNetCoreWcfBenchmark
             return true;
         }
 
-        public override async Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
+        public override Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
         {
-            return await MessagePackSerializer.DeserializeAsync<Item[]>(readStream);
+            var obj = MessagePackSerializer.NonGeneric.Deserialize(type, readStream);
+
+            return Task.FromResult(obj);
         }
 
         public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, TransportContext transportContext)
         {
-            return MessagePackSerializer.SerializeAsync(writeStream, value);
+            MessagePackSerializer.NonGeneric.Serialize(type, writeStream, value);
+            return Task.CompletedTask;
         }
 
         public MessagePackMediaTypeFormatter()

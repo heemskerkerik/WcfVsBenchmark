@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AspNetCoreWcfBenchmark
 {
-    public class Utf8JsonMediaTypeFormatter: MediaTypeFormatter
+    public class Utf8JsonMediaTypeFormatter<T>: MediaTypeFormatter
     {
         public override bool CanReadType(Type type)
         {
@@ -22,7 +22,7 @@ namespace AspNetCoreWcfBenchmark
 
         public override async Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
         {
-            return await Utf8Json.JsonSerializer.DeserializeAsync<Item[]>(readStream);
+            return await Utf8Json.JsonSerializer.DeserializeAsync<T[]>(readStream);
         }
 
         public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, TransportContext transportContext)
