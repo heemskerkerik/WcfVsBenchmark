@@ -3,8 +3,6 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 
-using AutoFixture;
-
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class WcfService<T>
@@ -32,17 +30,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _host.Close();
         }
 
-        public WcfService(int port, WSMessageEncoding encoding, int itemCount, bool sendItems, bool receiveItems)
+        public WcfService(int port, WSMessageEncoding encoding, int itemCount)
         {
             _port = port;
             _encoding = encoding;
 
-            var fixture = new Fixture();
-
-            _itemsToSend = sendItems
-                               ? Cache.Get<T>().Take(itemCount).ToArray()
-                               : new T[0];
-            _itemCountToRequest = receiveItems ? itemCount : 0;
+            _itemsToSend = Cache.Get<T>().Take(itemCount).ToArray();
+            _itemCountToRequest = itemCount;
         }
 
         private readonly int _port;

@@ -5,8 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
-using AutoFixture;
-
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class RestServiceBase<T>
@@ -54,17 +52,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return await response.Content.ReadAsAsync<T[]>(new[] { _utf8JsonMediaTypeFormatter });
         }
 
-        protected RestServiceBase(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
+        protected RestServiceBase(int port, SerializerType format, int itemCount)
         {
             _port = port;
             _format = format;
 
-            var fixture = new Fixture();
-
-            _itemsToSend = sendItems
-                               ? Cache.Get<T>().Take(itemCount).ToArray()
-                               : new T[0];
-            _itemCountToRequest = receiveItems ? itemCount : 0;
+            _itemsToSend = Cache.Get<T>().Take(itemCount).ToArray();
+            _itemCountToRequest = itemCount;
 
             _invokeFunc = GetInvokeFunction();
         }

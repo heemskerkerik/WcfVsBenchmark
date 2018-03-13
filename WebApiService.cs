@@ -24,8 +24,8 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _app.Dispose();
         }
 
-        public WebApiService(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
-            : base(port, format, itemCount, sendItems, receiveItems)
+        public WebApiService(int port, SerializerType format, int itemCount)
+            : base(port, format, itemCount)
         {
             _port = port;
             _format = format;

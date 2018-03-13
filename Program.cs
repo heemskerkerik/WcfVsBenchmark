@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
@@ -31,7 +31,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             {
                 Add(Job.Clr);
                 Add(ConsoleLogger.Default);
-                Add(TargetMethodColumn.Method, new ParamColumn(nameof(ItemCount)), new ParamColumn(nameof(SendItems)), new ParamColumn(nameof(ReceiveItems)), StatisticColumn.Mean, StatisticColumn.P95);
+                Add(TargetMethodColumn.Method, new ParamColumn(nameof(ItemCount)), StatisticColumn.Mean, StatisticColumn.P95);
                 Add(MemoryDiagnoser.Default.GetColumnProvider());
                 Add(EnvironmentAnalyser.Default);
                 Add(MemoryDiagnoser.Default);
@@ -43,9 +43,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         [Params(0, 10, 100, 1000)]
         public int ItemCount { get; set; }
 
-        public bool SendItems { get; set; } = true;
-        public bool ReceiveItems { get; set; } = true;
-
         [GlobalSetup]
         public void Initialize()
         {
@@ -54,162 +51,126 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _smallTextWcfService = new WcfService<SmallItem>(
                 port: port++,
                 encoding: WSMessageEncoding.Text,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallTextWcfService.Start();
 
             _smallWebApiJsonNetService = new WebApiService<SmallItem>(
                 port: port++,
                 format: SerializerType.JsonNet,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallWebApiJsonNetService.Start();
 
             _smallWebApiMessagePackService = new WebApiService<SmallItem>(
                 port: port++,
                 format: SerializerType.MessagePack,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallWebApiMessagePackService.Start();
 
             _smallWebApiXmlService = new WebApiService<SmallItem>(
                 port: port++,
                 format: SerializerType.Xml,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallWebApiXmlService.Start();
 
             _smallWebApiUtf8JsonService = new WebApiService<SmallItem>(
                 port: port++,
                 format: SerializerType.Utf8Json,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallWebApiUtf8JsonService.Start();
 
             _smallAspNetCoreJsonNetService = new AspNetCoreService<SmallItem>(
                 port: port++,
                 format:SerializerType.JsonNet,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallAspNetCoreJsonNetService.Start();
 
             _smallAspNetCoreMessagePackService = new AspNetCoreService<SmallItem>(
                 port: port++,
                 format: SerializerType.MessagePack,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallAspNetCoreMessagePackService.Start();
 
             _smallAspNetCoreXmlService = new AspNetCoreService<SmallItem>(
                 port: port++,
                 format: SerializerType.Xml,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallAspNetCoreXmlService.Start();
 
             _smallAspNetCoreUtf8JsonService = new AspNetCoreService<SmallItem>(
                 port: port++,
                 format: SerializerType.Utf8Json,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _smallAspNetCoreUtf8JsonService.Start();
 
             _largeTextWcfService = new WcfService<LargeItem>(
                 port: port++,
                 encoding: WSMessageEncoding.Text,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeTextWcfService.Start();
 
             _largeWebApiJsonNetService = new WebApiService<LargeItem>(
                 port: port++,
                 format: SerializerType.JsonNet,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeWebApiJsonNetService.Start();
 
             _largeWebApiMessagePackService = new WebApiService<LargeItem>(
                 port: port++,
                 format: SerializerType.MessagePack,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeWebApiMessagePackService.Start();
 
             _largeWebApiXmlService = new WebApiService<LargeItem>(
                 port: port++,
                 format: SerializerType.Xml,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeWebApiXmlService.Start();
 
             _largeWebApiUtf8JsonService = new WebApiService<LargeItem>(
                 port: port++,
                 format: SerializerType.Utf8Json,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeWebApiUtf8JsonService.Start();
 
             _largeAspNetCoreJsonNetService = new AspNetCoreService<LargeItem>(
                 port: port++,
                 format:SerializerType.JsonNet,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeAspNetCoreJsonNetService.Start();
 
             _largeAspNetCoreMessagePackService = new AspNetCoreService<LargeItem>(
                 port: port++,
                 format: SerializerType.MessagePack,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeAspNetCoreMessagePackService.Start();
 
             _largeAspNetCoreXmlService = new AspNetCoreService<LargeItem>(
                 port: port++,
                 format: SerializerType.Xml,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeAspNetCoreXmlService.Start();
 
             _largeAspNetCoreUtf8JsonService = new AspNetCoreService<LargeItem>(
                 port: port++,
                 format: SerializerType.Utf8Json,
-                itemCount: ItemCount,
-                sendItems: SendItems,
-                receiveItems: ReceiveItems
+                itemCount: ItemCount
             );
             _largeAspNetCoreUtf8JsonService.Start();
         }

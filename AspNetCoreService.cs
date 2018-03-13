@@ -35,8 +35,8 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _host?.StopAsync().Wait();
         }
 
-        public AspNetCoreService(int port, SerializerType format, int itemCount, bool sendItems, bool receiveItems)
-            : base(port, format, itemCount, sendItems, receiveItems)
+        public AspNetCoreService(int port, SerializerType format, int itemCount)
+            : base(port, format, itemCount)
         {
             _port = port;
             _format = format;
