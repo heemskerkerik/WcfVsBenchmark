@@ -38,6 +38,16 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                     endpoint.Behaviors.Add(new WebHttpBehavior { DefaultOutgoingRequestFormat = WebMessageFormat.Json, DefaultOutgoingResponseFormat = WebMessageFormat.Json, DefaultBodyStyle = WebMessageBodyStyle.Wrapped });
                     break;
                 }
+                case WcfBindingType.BinaryMessageEncoding:
+                    var binding = new CustomBinding(
+                        new BinaryMessageEncodingBindingElement(),
+                        new HttpTransportBindingElement
+                        {
+                            MaxReceivedMessageSize = 1024 * 1024 * 1024,
+                        }
+                    );
+                    AddServiceEndpoint(binding);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -68,6 +78,17 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
                     return factory;
                 }
+                case WcfBindingType.BinaryMessageEncoding:
+                    var binding = new CustomBinding(
+                        new BinaryMessageEncodingBindingElement(),
+                        new HttpTransportBindingElement
+                        {
+                            MaxReceivedMessageSize = 1024 * 1024 * 1024,
+                        }
+                    );
+
+                    return CreateChannelFactory(binding);
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -113,6 +134,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         BasicText,
         WebXml,
         WebJson,
+        BinaryMessageEncoding,
     }
 
     [ServiceContract]

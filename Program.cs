@@ -68,6 +68,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _smallWebJsonWcfService.Start();
 
+            _smallBinaryWcfService = new WcfService<SmallItem>(
+                port: port++,
+                bindingType: WcfBindingType.BinaryMessageEncoding,
+                itemCount: ItemCount
+            );
+            _smallBinaryWcfService.Start();
+
             _smallWebApiJsonNetService = new WebApiService<SmallItem>(
                 port: port++,
                 format: SerializerType.JsonNet,
@@ -145,6 +152,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _largeWebJsonWcfService.Start();
 
+            _largeBinaryWcfService = new WcfService<LargeItem>(
+                port: port++,
+                bindingType: WcfBindingType.BinaryMessageEncoding,
+                itemCount: ItemCount
+            );
+            _largeBinaryWcfService.Start();
+
             _largeWebApiJsonNetService = new WebApiService<LargeItem>(
                 port: port++,
                 format: SerializerType.JsonNet,
@@ -208,6 +222,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _smallTextWcfService?.Stop();
             _smallWebXmlWcfService?.Stop();
             _smallWebJsonWcfService?.Stop();
+            _smallBinaryWcfService?.Stop();
             _smallWebApiJsonNetService?.Stop();
             _smallWebApiMessagePackService?.Stop();
             _smallWebApiXmlService?.Stop();
@@ -219,6 +234,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _largeTextWcfService?.Stop();
             _largeWebXmlWcfService?.Stop();
             _largeWebJsonWcfService?.Stop();
+            _largeBinaryWcfService?.Stop();
             _largeWebApiJsonNetService?.Stop();
             _largeWebApiMessagePackService?.Stop();
             _largeWebApiXmlService?.Stop();
@@ -245,6 +261,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<SmallItem> SmallWcfWebJson()
         {
             return _smallWebJsonWcfService.Invoke();
+        }
+
+        [Benchmark]
+        public IReadOnlyCollection<SmallItem> SmallWcfBinary()
+        {
+            return _smallBinaryWcfService.Invoke();
         }
 
         [Benchmark]
@@ -314,6 +336,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
+        public IReadOnlyCollection<LargeItem> LargeWcfBinary()
+        {
+            return _largeBinaryWcfService.Invoke();
+        }
+
+        [Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeWebApiJsonNet()
         {
             return _largeWebApiJsonNetService.Invoke();
@@ -364,6 +392,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WcfService<SmallItem> _smallTextWcfService;
         private WcfService<SmallItem> _smallWebXmlWcfService;
         private WcfService<SmallItem> _smallWebJsonWcfService;
+        private WcfService<SmallItem> _smallBinaryWcfService;
         private WebApiService<SmallItem> _smallWebApiJsonNetService;
         private WebApiService<SmallItem> _smallWebApiMessagePackService;
         private WebApiService<SmallItem> _smallWebApiXmlService;
@@ -375,6 +404,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WcfService<LargeItem> _largeTextWcfService;
         private WcfService<LargeItem> _largeWebXmlWcfService;
         private WcfService<LargeItem> _largeWebJsonWcfService;
+        private WcfService<LargeItem> _largeBinaryWcfService;
         private WebApiService<LargeItem> _largeWebApiJsonNetService;
         private WebApiService<LargeItem> _largeWebApiMessagePackService;
         private WebApiService<LargeItem> _largeWebApiXmlService;
