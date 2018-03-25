@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -12,11 +12,18 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
     {
         public void Start()
         {
-            _host = new WebServiceHost(typeof(WcfServiceImpl), new Uri($"http://localhost:{_port}/"));
+            string uri = $"http://localhost:{_port}/";
+
+            if(_bindingType == WcfBindingType.NetTcp)
+                uri = $"net.tcp://localhost:{_port}";
+
+            _host = new WebServiceHost(typeof(WcfServiceImpl), new Uri(uri));
             AddServiceEndPoint();
 
-            _channelFactory = CreateChannelFactory();
+            _clientFactory = CreateClientFactory();
             _host.Open();
+
+            _client = _clientFactory();
         }
 
         private void AddServiceEndPoint()
@@ -48,37 +55,66 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                     );
                     AddServiceEndpoint(binding);
                     break;
+                case WcfBindingType.NetTcp:
+                    AddServiceEndpoint(new NetTcpBinding(SecurityMode.None) { MaxReceivedMessageSize = 1024 * 1024 * 1024 });
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             ServiceEndpoint AddServiceEndpoint(Binding binding)
             {
-                return _host.AddServiceEndpoint(typeof(IWcfService<T>), binding, $"http://localhost:{_port}");
+                string uri = $"http://localhost:{_port}";
+
+                if(_bindingType == WcfBindingType.NetTcp)
+                    uri = $"net.tcp://localhost:{_port}";
+
+                return _host.AddServiceEndpoint(typeof(IWcfService<T>), binding, uri);
             }
         }
 
-        private ChannelFactory<IWcfService<T>> CreateChannelFactory()
+        private Func<WcfServiceClient<T>> CreateClientFactory()
         {
+            string uri = $"http://localhost:{_port}";
+
+            if(_bindingType == WcfBindingType.NetTcp)
+                uri = $"net.tcp://localhost:{_port}";
+
+            var endpointAddress = new EndpointAddress(uri);
+
             switch(_bindingType)
             {
                 case WcfBindingType.BasicText:
-                    return CreateChannelFactory(new BasicHttpBinding { MessageEncoding = WSMessageEncoding.Text, MaxReceivedMessageSize = 1024 * 1024 * 1024 });
+                {
+                    var binding = new BasicHttpBinding { MessageEncoding = WSMessageEncoding.Text, MaxReceivedMessageSize = 1024 * 1024 * 1024 };
+                    return () => new WcfServiceClient<T>(binding, endpointAddress);
+                }
                 case WcfBindingType.WebXml:
                 {
-                    var factory = CreateChannelFactory(new WebHttpBinding { MaxReceivedMessageSize = 1024 * 1024 * 1024 });
-                    factory.Endpoint.Behaviors.Add(new WebHttpBehavior { DefaultOutgoingRequestFormat = WebMessageFormat.Xml, DefaultOutgoingResponseFormat = WebMessageFormat.Xml, DefaultBodyStyle = WebMessageBodyStyle.Wrapped });
+                    var binding = new WebHttpBinding { MaxReceivedMessageSize = 1024 * 1024 * 1024 };
+                    var behavior = new WebHttpBehavior { DefaultOutgoingRequestFormat = WebMessageFormat.Xml, DefaultOutgoingResponseFormat = WebMessageFormat.Xml, DefaultBodyStyle = WebMessageBodyStyle.Wrapped };
+                    return () =>
+                           {
+                               var client = new WcfServiceClient<T>(binding, endpointAddress);
+                               client.ChannelFactory.Endpoint.Behaviors.Add(behavior);
 
-                    return factory;
+                               return client;
+                           };
                 }
                 case WcfBindingType.WebJson:
                 {
-                    var factory = CreateChannelFactory(new WebHttpBinding { MaxReceivedMessageSize = 1024 * 1024 * 1024 });
-                    factory.Endpoint.Behaviors.Add(new WebHttpBehavior { DefaultOutgoingRequestFormat = WebMessageFormat.Json, DefaultOutgoingResponseFormat = WebMessageFormat.Json, DefaultBodyStyle = WebMessageBodyStyle.Wrapped });
+                    var binding = new WebHttpBinding { MaxReceivedMessageSize = 1024 * 1024 * 1024 };
+                    var behavior = new WebHttpBehavior { DefaultOutgoingRequestFormat = WebMessageFormat.Json, DefaultOutgoingResponseFormat = WebMessageFormat.Json, DefaultBodyStyle = WebMessageBodyStyle.Wrapped };
+                    return () =>
+                           {
+                               var client = new WcfServiceClient<T>(binding, endpointAddress);
+                               client.ChannelFactory.Endpoint.Behaviors.Add(behavior);
 
-                    return factory;
+                               return client;
+                           };
                 }
                 case WcfBindingType.BinaryMessageEncoding:
+                {
                     var binding = new CustomBinding(
                         new BinaryMessageEncodingBindingElement(),
                         new HttpTransportBindingElement
@@ -87,28 +123,28 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                         }
                     );
 
-                    return CreateChannelFactory(binding);
+                    return () => new WcfServiceClient<T>(binding, endpointAddress);
+                }
+
+                case WcfBindingType.NetTcp:
+                {
+                    var binding = new NetTcpBinding(SecurityMode.None) { MaxReceivedMessageSize = 1024 * 1024 * 1024 };
+                    return () => new WcfServiceClient<T>(binding, endpointAddress);
+                }
 
                 default:
                     throw new ArgumentOutOfRangeException();
-            }
-
-            ChannelFactory<IWcfService<T>> CreateChannelFactory(Binding binding)
-            {
-                return new ChannelFactory<IWcfService<T>>(binding, $"http://localhost:{_port}");
             }
         }
 
         public T[] Invoke()
         {
-            var channel = _channelFactory.CreateChannel();
-
-            return channel.Operation(_itemsToSend, _itemCountToRequest);
+            return _client.Operation(_itemsToSend, _itemCountToRequest);
         }
 
         public void Stop()
         {
-            _channelFactory?.Close();
+            _client?.Close();
             _host.Close();
         }
 
@@ -126,7 +162,8 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private readonly T[] _itemsToSend;
         private readonly int _itemCountToRequest;
         private WebServiceHost _host;
-        private ChannelFactory<IWcfService<T>> _channelFactory;
+        private Func<WcfServiceClient<T>> _clientFactory;
+        private WcfServiceClient<T> _client;
     }
 
     public enum WcfBindingType
@@ -135,6 +172,20 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         WebXml,
         WebJson,
         BinaryMessageEncoding,
+        NetTcp,
+    }
+
+    public class WcfServiceClient<T>: ClientBase<IWcfService<T>>, IWcfService<T>
+    {
+        public WcfServiceClient(Binding binding, EndpointAddress endpointAddress)
+            : base(binding, endpointAddress)
+        {
+        }
+
+        public T[] Operation(T[] items, int itemCount)
+        {
+            return Channel.Operation(items, itemCount);
+        }
     }
 
     [ServiceContract]
