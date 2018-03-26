@@ -22,17 +22,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return true;
         }
 
-        public override Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
+        public override async Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
         {
-            var obj = MessagePackSerializer.NonGeneric.Deserialize(type, readStream);
-
-            return Task.FromResult(obj);
+            return await MessagePackSerializer.DeserializeAsync<T[]>(readStream);
         }
 
         public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, TransportContext transportContext)
         {
-            MessagePackSerializer.NonGeneric.Serialize(type, writeStream, value);
-            return Task.CompletedTask;
+            return MessagePackSerializer.SerializeAsync(writeStream, (T[]) value);
         }
 
         public MessagePackMediaTypeFormatter()
