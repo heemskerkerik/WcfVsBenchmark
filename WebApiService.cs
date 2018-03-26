@@ -77,6 +77,9 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                 case SerializerType.Utf8Json:
                     config.Formatters.Add(new Utf8JsonMediaTypeFormatter<T>());
                     break;
+                case SerializerType.ZeroFormatter:
+                    config.Formatters.Add(new ZeroFormatterMediaTypeFormatter<T>());
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,6 +10,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
+
+using ZeroFormatter;
 
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
@@ -73,11 +76,15 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                                         break;
                                     case SerializerType.MessagePack:
                                         opt.InputFormatters.Add(new MessagePackInputFormatter<T>());
-                                        opt.OutputFormatters.Add(new MessagePackOutputFormatter());
+                                        opt.OutputFormatters.Add(new MessagePackOutputFormatter<T>());
                                         break;
                                     case SerializerType.Utf8Json:
                                         opt.InputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonInputFormatter());
                                         opt.OutputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonOutputFormatter());
+                                        break;
+                                    case SerializerType.ZeroFormatter:
+                                        opt.InputFormatters.Add(new ZeroFormatterInputFormatter<T>());
+                                        opt.OutputFormatters.Add(new ZeroFormatterOutputFormatter<T>());
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
@@ -129,17 +136,63 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class MessagePackOutputFormatter: OutputFormatter
+    public class MessagePackOutputFormatter<T>: OutputFormatter
     {
         public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
         {
-            return MessagePackSerializer.SerializeAsync(context.HttpContext.Response.Body, context.Object);
+            return MessagePackSerializer.SerializeAsync(context.HttpContext.Response.Body, (T[]) context.Object);
         }
 
         public MessagePackOutputFormatter()
         {
             SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/x-msgpack");
+        }
+    }
+
+    public class ZeroFormatterInputFormatter<T>: InputFormatter
+    {
+        private const long DefaultBufferSize = 4096;
+
+        public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
+        {
+            using(var stream = new MemoryStream((int) (context.HttpContext.Request.ContentLength ?? DefaultBufferSize)))
+            {
+                await context.HttpContext.Request.Body.CopyToAsync(stream);
+
+                stream.Position = 0;
+
+                var result = ZeroFormatterSerializer.Deserialize<T[]>(stream);
+                return InputFormatterResult.Success(result);
+            }
+        }
+
+        public ZeroFormatterInputFormatter()
+        {
+            SupportedMediaTypes.Clear();
+            SupportedMediaTypes.Add("application/x-zeroformatter");
+        }
+    }
+
+    public class ZeroFormatterOutputFormatter<T>: OutputFormatter
+    {
+        public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
+        {
+            using(var stream = new MemoryStream())
+            {
+                ZeroFormatterSerializer.Serialize(stream, (T[]) context.Object);
+
+                stream.Position = 0;
+                context.HttpContext.Response.ContentLength = stream.Length;
+
+                await stream.CopyToAsync(context.HttpContext.Response.Body);
+            }
+        }
+
+        public ZeroFormatterOutputFormatter()
+        {
+            SupportedMediaTypes.Clear();
+            SupportedMediaTypes.Add("application/x-zeroformatter");
         }
     }
 }

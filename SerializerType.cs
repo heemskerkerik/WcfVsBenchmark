@@ -5,6 +5,7 @@
         Xml,
         JsonNet,
         MessagePack,
-        Utf8Json
+        Utf8Json,
+        ZeroFormatter,
     }
 }

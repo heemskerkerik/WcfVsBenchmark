@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using BenchmarkDotNet.Analysers;
@@ -162,6 +162,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                 itemCount: ItemCount
             );
             _smallAspNetCoreMessagePackHttpWebRequestService.Start();
+            
+            _smallAspNetCoreZeroFormatterHttpWebRequestService = new AspNetCoreService<SmallItem>(
+                port: port++,
+                format: SerializerType.ZeroFormatter,
+                useHttpClient: false,
+                itemCount: ItemCount
+            );
+            _smallAspNetCoreZeroFormatterHttpWebRequestService.Start();
 
             _largeTextWcfService = new WcfService<LargeItem>(
                 port: port++,
@@ -238,6 +246,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _largeWebApiMessagePackHttpWebRequestService.Start();
 
+            _largeWebApiZeroFormatterHttpWebRequestService = new WebApiService<LargeItem>(
+                port: port++,
+                format: SerializerType.ZeroFormatter,
+                useHttpClient: false,
+                itemCount: ItemCount
+            );
+            _largeWebApiZeroFormatterHttpWebRequestService.Start();
+
             _largeAspNetCoreJsonNetService = new AspNetCoreService<LargeItem>(
                 port: port++,
                 format: SerializerType.JsonNet,
@@ -277,6 +293,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                 itemCount: ItemCount
             );
             _largeAspNetCoreMessagePackHttpWebRequestService.Start();
+            
+            _largeAspNetCoreZeroFormatterHttpWebRequestService = new AspNetCoreService<LargeItem>(
+                port: port++,
+                format: SerializerType.ZeroFormatter,
+                useHttpClient: false,
+                itemCount: ItemCount
+            );
+            _largeAspNetCoreZeroFormatterHttpWebRequestService.Start();
         }
 
         [GlobalCleanup]
@@ -297,6 +321,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _smallAspNetCoreXmlService?.Stop();
             _smallAspNetCoreUtf8JsonService?.Stop();
             _smallAspNetCoreMessagePackHttpWebRequestService?.Stop();
+            _smallAspNetCoreZeroFormatterHttpWebRequestService?.Stop();
             _largeTextWcfService?.Stop();
             _largeWebXmlWcfService?.Stop();
             _largeWebJsonWcfService?.Stop();
@@ -307,11 +332,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _largeWebApiXmlService?.Stop();
             _largeWebApiUtf8JsonService?.Stop();
             _largeWebApiMessagePackHttpWebRequestService?.Stop();
+            _largeWebApiZeroFormatterHttpWebRequestService?.Stop();
             _largeAspNetCoreJsonNetService?.Stop();
             _largeAspNetCoreMessagePackService?.Stop();
             _largeAspNetCoreXmlService?.Stop();
             _largeAspNetCoreUtf8JsonService?.Stop();
             _largeAspNetCoreMessagePackHttpWebRequestService?.Stop();
+            _largeAspNetCoreZeroFormatterHttpWebRequestService?.Stop();
         }
 
         [Benchmark]
@@ -464,6 +491,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _largeWebApiMessagePackHttpWebRequestService.Invoke();
         }
 
+        [Benchmark]
+        public IReadOnlyCollection<LargeItem> LargeWebApiZeroFormatterHttpWebRequest()
+        {
+            return _largeWebApiZeroFormatterHttpWebRequestService.Invoke();
+        }
+
         //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreJsonNet()
         {
@@ -494,6 +527,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _largeAspNetCoreMessagePackHttpWebRequestService.Invoke();
         }
 
+        [Benchmark]
+        public IReadOnlyCollection<LargeItem> LargeAspNetCoreZeroFormatterHttpWebRequest()
+        {
+            return _largeAspNetCoreZeroFormatterHttpWebRequestService.Invoke();
+        }
+        
         private WcfService<SmallItem> _smallTextWcfService;
         private WcfService<SmallItem> _smallWebXmlWcfService;
         private WcfService<SmallItem> _smallWebJsonWcfService;
@@ -509,6 +548,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private AspNetCoreService<SmallItem> _smallAspNetCoreXmlService;
         private AspNetCoreService<SmallItem> _smallAspNetCoreUtf8JsonService;
         private AspNetCoreService<SmallItem> _smallAspNetCoreMessagePackHttpWebRequestService;
+        private AspNetCoreService<SmallItem> _smallAspNetCoreZeroFormatterHttpWebRequestService;
         private WcfService<LargeItem> _largeTextWcfService;
         private WcfService<LargeItem> _largeWebXmlWcfService;
         private WcfService<LargeItem> _largeWebJsonWcfService;
@@ -519,10 +559,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WebApiService<LargeItem> _largeWebApiXmlService;
         private WebApiService<LargeItem> _largeWebApiUtf8JsonService;
         private WebApiService<LargeItem> _largeWebApiMessagePackHttpWebRequestService;
+        private WebApiService<LargeItem> _largeWebApiZeroFormatterHttpWebRequestService;
         private AspNetCoreService<LargeItem> _largeAspNetCoreJsonNetService;
         private AspNetCoreService<LargeItem> _largeAspNetCoreMessagePackService;
         private AspNetCoreService<LargeItem> _largeAspNetCoreXmlService;
         private AspNetCoreService<LargeItem> _largeAspNetCoreUtf8JsonService;
         private AspNetCoreService<LargeItem> _largeAspNetCoreMessagePackHttpWebRequestService;
+        private AspNetCoreService<LargeItem> _largeAspNetCoreZeroFormatterHttpWebRequestService;
     }
 }

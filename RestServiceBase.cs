@@ -10,6 +10,8 @@ using MessagePack;
 
 using Microsoft.AspNetCore.Http;
 
+using ZeroFormatter;
+
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public class RestServiceBase<T>
@@ -83,6 +85,27 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             }
         }
 
+        private IReadOnlyCollection<T> InvokeZeroFormatterHttpWebRequest()
+        {
+            var request = WebRequest.CreateHttp($"http://localhost:{_port}/api/operation/{typeof(T).Name}?itemCount={_itemCountToRequest}");
+            request.ContentType = "application/x-zeroformatter";
+            request.Method = HttpMethods.Post;
+
+            using(var requestStream = request.GetRequestStream())
+            {
+                ZeroFormatterSerializer.Serialize(requestStream, _itemsToSend);
+            }
+
+            using(var response = (HttpWebResponse) request.GetResponse())
+            using(var responseStream = response.GetResponseStream())
+            {
+                if(response.StatusCode != HttpStatusCode.OK)
+                    throw new Exception($"Response status was not 200 OK but {response.StatusCode}.");
+
+                return ZeroFormatterSerializer.Deserialize<T[]>(responseStream);
+            }
+        }
+
         protected RestServiceBase(int port, SerializerType format, bool useHttpClient, int itemCount)
         {
             _port = port;
@@ -124,6 +147,8 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             {
                 case SerializerType.MessagePack:
                     return InvokeMessagePackHttpWebRequest;
+                case SerializerType.ZeroFormatter:
+                    return InvokeZeroFormatterHttpWebRequest;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_format), _format, null);
