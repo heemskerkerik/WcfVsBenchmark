@@ -12,14 +12,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
     public class WebApiService<T>: RestServiceBase<T>
         where T: class, new()
     {
-        public void Start()
+        public override void Start()
         {
             var startup = new WebApiStartup<T>(_format);
             _app = WebApp.Start($"http://localhost:{_port}", startup.Configuration);
             InitializeClients();
         }
 
-        public void Stop()
+        public override void Stop()
         {
             _app.Dispose();
         }

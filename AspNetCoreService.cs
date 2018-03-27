@@ -18,14 +18,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
     public class AspNetCoreService<T>: RestServiceBase<T>
         where T: class, new()
     {
-        public void Start()
+        public override void Start()
         {
-            var startup = new AspNetCoreStartup<T>(_format);
+            _startup = new AspNetCoreStartup<T>(_format);
 
             _host = new WebHostBuilder()
                    .UseKestrel(opt => opt.Limits.MaxRequestBodySize = 180000000)
-                   .ConfigureServices(startup.ConfigureServices)
-                   .Configure(startup.Configure)
+                   .ConfigureServices(ConfigureServices)
+                   .Configure(Configure)
                    .UseUrls($"http://localhost:{_port}")
                    .Build();
             _host.Start();
@@ -33,7 +33,17 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             InitializeClients();
         }
 
-        public void Stop()
+        protected virtual void ConfigureServices(IServiceCollection services)
+        {
+            _startup.ConfigureServices(services);
+        }
+
+        protected virtual void Configure(IApplicationBuilder app)
+        {
+            app.UseMvc();
+        }
+
+        public override void Stop()
         {
             _host?.StopAsync().Wait();
         }
@@ -48,6 +58,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private readonly int _port;
         private readonly SerializerType _format;
         private IWebHost _host;
+        private AspNetCoreStartup<T> _startup;
     }
 
     public class AspNetCoreStartup<T>
@@ -90,11 +101,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                                         throw new ArgumentOutOfRangeException();
                                 }
                             });
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseMvc();
         }
 
         public AspNetCoreStartup(SerializerType format)
@@ -193,6 +199,52 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/x-zeroformatter");
+        }
+    }
+
+    public class JsonNetAspNetCoreService<T>: AspNetCoreService<T>
+        where T: class, new()
+    {
+        public JsonNetAspNetCoreService(int port, int itemCount)
+            : base(port, SerializerType.JsonNet, true, itemCount)
+        {
+        }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc(opt =>
+                            {
+                                opt.InputFormatters.RemoveType<JsonPatchInputFormatter>();
+
+                                var jsonInputFormatter = opt.InputFormatters.OfType<JsonInputFormatter>().First();
+                                opt.InputFormatters.Clear();
+                                opt.InputFormatters.Add(jsonInputFormatter);
+
+                                var jsonOutputFormatter = opt.OutputFormatters.OfType<JsonOutputFormatter>().First();
+                                opt.OutputFormatters.Clear();
+                                opt.OutputFormatters.Add(jsonOutputFormatter);
+                            });
+        }
+    }
+
+    public class MessagePackAspNetCoreService<T>: AspNetCoreService<T>
+        where T: class, new()
+    {
+        public MessagePackAspNetCoreService(int port, int itemCount)
+            : base(port, SerializerType.MessagePack, true, itemCount)
+        {
+        }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvcCore(opt =>
+                                {
+                                    opt.InputFormatters.Clear();
+                                    opt.InputFormatters.Add(new MessagePackInputFormatter<T>());
+
+                                    opt.OutputFormatters.Clear();
+                                    opt.OutputFormatters.Add(new MessagePackOutputFormatter<T>());
+                                });
         }
     }
 }
