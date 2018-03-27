@@ -648,13 +648,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WebApiService<MessagePackSmallItem> _smallWebApiMessagePackService;
         private WebApiService<SmallItem> _smallWebApiXmlService;
         private WebApiService<SmallItem> _smallWebApiUtf8JsonService;
-        private WebApiService<SmallItem> _smallWebApiMessagePackHttpWebRequestService;
+        private WebApiService<ZeroFormatterSmallItem> _smallWebApiMessagePackHttpWebRequestService;
         private AspNetCoreService<SmallItem> _smallAspNetCoreJsonNetService;
         private AspNetCoreService<MessagePackSmallItem> _smallAspNetCoreMessagePackService;
         private AspNetCoreService<SmallItem> _smallAspNetCoreXmlService;
         private AspNetCoreService<SmallItem> _smallAspNetCoreUtf8JsonService;
         private AspNetCoreService<SmallItem> _smallAspNetCoreMessagePackHttpWebRequestService;
-        private AspNetCoreService<SmallItem> _smallAspNetCoreZeroFormatterHttpWebRequestService;
+        private AspNetCoreService<ZeroFormatterSmallItem> _smallAspNetCoreZeroFormatterHttpWebRequestService;
         private WcfService<LargeItem> _largeTextWcfService;
         private WcfService<LargeItem> _largeWebXmlWcfService;
         private WcfService<LargeItem> _largeWebJsonWcfService;
@@ -665,11 +665,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WebApiService<LargeItem> _largeWebApiXmlService;
         private WebApiService<LargeItem> _largeWebApiUtf8JsonService;
         private WebApiService<MessagePackLargeItem> _largeWebApiMessagePackHttpWebRequestService;
-        private WebApiService<LargeItem> _largeWebApiZeroFormatterHttpWebRequestService;
+        private WebApiService<ZeroFormatterLargeItem> _largeWebApiZeroFormatterHttpWebRequestService;
         private RestBenchmarkSuite<LargeItem> _largeAspNetCoreJsonNetSuite;
         private RestBenchmarkSuite<MessagePackLargeItem> _largeAspNetCoreMessagePackSuite;
         private RestBenchmarkSuite<LargeItem> _largeAspNetCoreXmlSuite;
         private RestBenchmarkSuite<LargeItem> _largeAspNetCoreUtf8JsonSuite;
-        private AspNetCoreService<LargeItem> _largeAspNetCoreZeroFormatterHttpWebRequestService;
+        private AspNetCoreService<ZeroFormatterLargeItem> _largeAspNetCoreZeroFormatterHttpWebRequestService;
     }
 }
