@@ -584,4 +584,64 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                 new XmlSerializer(typeof(T[])).Serialize(writer, ItemsToSend);
         }
     }
+
+    public class Utf8JsonHttpClientClient<T>: HttpClientRestClientBase<T>
+    {
+        public Utf8JsonHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override MediaTypeFormatter MediaTypeFormatter { get; } = new Utf8JsonMediaTypeFormatter<T>();
+    }
+
+    public class Utf8JsonHttpWebRequestClient<T>: HttpWebRequestClientBase<T>
+    {
+        public Utf8JsonHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/json";
+
+        protected override void SerializeItems(Stream stream, T[] items)
+        {
+            Utf8Json.JsonSerializer.Serialize(stream, items);
+        }
+
+        protected override IReadOnlyCollection<T> Deserialize(Stream stream)
+        {
+            return Utf8Json.JsonSerializer.Deserialize<T[]>(stream);
+        }
+    }
+
+    public class Utf8JsonPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
+    {
+        public Utf8JsonPrecomputedHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/json";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            Utf8Json.JsonSerializer.Serialize(stream, ItemsToSend);
+        }
+    }
+
+    public class Utf8JsonPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
+    {
+        public Utf8JsonPrecomputedHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/xml";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            Utf8Json.JsonSerializer.Serialize(stream, ItemsToSend);
+        }
+    }
 }

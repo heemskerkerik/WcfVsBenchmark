@@ -269,4 +269,24 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
+    public class Utf8JsonAspNetCoreService<T>: AspNetCoreService<T>
+        where T: class, new()
+    {
+        public Utf8JsonAspNetCoreService(int port, int itemCount)
+            : base(port, SerializerType.Utf8Json, true, itemCount)
+        {
+        }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvcCore(opt =>
+                                {
+                                    opt.InputFormatters.Clear();
+                                    opt.InputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonInputFormatter());
+
+                                    opt.OutputFormatters.Clear();
+                                    opt.OutputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonOutputFormatter());
+                                });
+        }
+    }
 }
