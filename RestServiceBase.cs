@@ -637,11 +637,71 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
         }
 
-        protected override string RequestContentType => "application/xml";
+        protected override string RequestContentType => "application/json";
 
         protected override void SerializeItems(Stream stream)
         {
             Utf8Json.JsonSerializer.Serialize(stream, ItemsToSend);
+        }
+    }
+
+    public class ZeroFormatterHttpClientClient<T>: HttpClientRestClientBase<T>
+    {
+        public ZeroFormatterHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override MediaTypeFormatter MediaTypeFormatter { get; } = new ZeroFormatterMediaTypeFormatter<T>();
+    }
+
+    public class ZeroFormatterHttpWebRequestClient<T>: HttpWebRequestClientBase<T>
+    {
+        public ZeroFormatterHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/x-zeroformatter";
+
+        protected override void SerializeItems(Stream stream, T[] items)
+        {
+            ZeroFormatterSerializer.Serialize(stream, items);
+        }
+
+        protected override IReadOnlyCollection<T> Deserialize(Stream stream)
+        {
+            return ZeroFormatterSerializer.Deserialize<T[]>(stream);
+        }
+    }
+
+    public class ZeroFormatterPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
+    {
+        public ZeroFormatterPrecomputedHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/x-zeroformatter";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            ZeroFormatterSerializer.Serialize(stream, ItemsToSend);
+        }
+    }
+
+    public class ZeroFormatterPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
+    {
+        public ZeroFormatterPrecomputedHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/x-zeroformatter";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            ZeroFormatterSerializer.Serialize(stream, ItemsToSend);
         }
     }
 }

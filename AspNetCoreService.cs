@@ -124,6 +124,30 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             return Cache.LargeItems.Take(itemCount).ToArray();
         }
+        
+        [HttpPost("api/operation/MessagePackSmallItem")]
+        public MessagePackSmallItem[] Operation([FromBody] MessagePackSmallItem[] items, int itemCount)
+        {
+            return Cache.MessagePackSmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost("api/operation/MessagePackLargeItem")]
+        public MessagePackLargeItem[] Operation([FromBody] MessagePackLargeItem[] items, int itemCount)
+        {
+            return Cache.MessagePackLargeItems.Take(itemCount).ToArray();
+        }
+        
+        [HttpPost("api/operation/ZeroFormatterSmallItem")]
+        public ZeroFormatterSmallItem[] Operation([FromBody] ZeroFormatterSmallItem[] items, int itemCount)
+        {
+            return Cache.ZeroFormatterSmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost("api/operation/ZeroFormatterLargeItem")]
+        public ZeroFormatterLargeItem[] Operation([FromBody] ZeroFormatterLargeItem[] items, int itemCount)
+        {
+            return Cache.ZeroFormatterLargeItems.Take(itemCount).ToArray();
+        }
     }
 
     public class MessagePackInputFormatter<T>: InputFormatter
@@ -286,6 +310,27 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
                                     opt.OutputFormatters.Clear();
                                     opt.OutputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonOutputFormatter());
+                                });
+        }
+    }
+
+    public class ZeroFormatterAspNetCoreService<T>: AspNetCoreService<T>
+        where T: class, new()
+    {
+        public ZeroFormatterAspNetCoreService(int port, int itemCount)
+            : base(port, SerializerType.Utf8Json, true, itemCount)
+        {
+        }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvcCore(opt =>
+                                {
+                                    opt.InputFormatters.Clear();
+                                    opt.InputFormatters.Add(new ZeroFormatterInputFormatter<T>());
+
+                                    opt.OutputFormatters.Clear();
+                                    opt.OutputFormatters.Add(new ZeroFormatterOutputFormatter<T>());
                                 });
         }
     }
