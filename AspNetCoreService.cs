@@ -247,4 +247,26 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                                 });
         }
     }
+
+    public class XmlAspNetCoreService<T>: AspNetCoreService<T>
+        where T: class, new()
+    {
+        public XmlAspNetCoreService(int port, int itemCount)
+            : base(port, SerializerType.Xml, true, itemCount)
+        {
+        }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvcCore(opt =>
+                                {
+                                    opt.InputFormatters.Clear();
+                                    opt.InputFormatters.Add(new XmlSerializerInputFormatter());
+
+                                    opt.OutputFormatters.Clear();
+                                    opt.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                                });
+        }
+    }
+
 }

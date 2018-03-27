@@ -8,6 +8,8 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 using MessagePack;
 
@@ -517,4 +519,69 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
+    public class XmlHttpClientClient<T>: HttpClientRestClientBase<T>
+    {
+        public XmlHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override MediaTypeFormatter MediaTypeFormatter { get; } = new XmlMediaTypeFormatter { UseXmlSerializer = true };
+    }
+
+    public class XmlHttpWebRequestClient<T>: HttpWebRequestClientBase<T>
+    {
+        private XmlSerializer _serializer = new XmlSerializer(typeof(T[]));
+
+        public XmlHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/xml";
+
+        protected override void SerializeItems(Stream stream, T[] items)
+        {
+            using(var writer = XmlWriter.Create(stream))
+                _serializer.Serialize(writer, items);
+        }
+
+        protected override IReadOnlyCollection<T> Deserialize(Stream stream)
+        {
+            using(var reader = XmlReader.Create(stream))
+                return (T[]) _serializer.Deserialize(reader);
+        }
+    }
+
+    public class XmlPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
+    {
+        public XmlPrecomputedHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/xml";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            using(var writer = XmlWriter.Create(stream))
+                new XmlSerializer(typeof(T[])).Serialize(writer, ItemsToSend);
+        }
+    }
+
+    public class XmlPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
+    {
+        public XmlPrecomputedHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/xml";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            using(var writer = XmlWriter.Create(stream))
+                new XmlSerializer(typeof(T[])).Serialize(writer, ItemsToSend);
+        }
+    }
 }

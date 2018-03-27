@@ -19,15 +19,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         static void Main()
         {
             BenchmarkRunner.Run<WcfVsWebApiVsAspNetCoreMvc>();
-
-            // var b = new WcfVsWebApiVsAspNetCoreMvc();
-
-           // // b.ItemCount = 10;
-            // b.Initialize();
-
-           // // b.LargeAspNetCoreJsonNet();
-
-           // // b.Cleanup();
         }
     }
 
@@ -264,14 +255,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _largeWebApiZeroFormatterHttpWebRequestService.Start();
 
-            _largeAspNetCoreJsonNetServiceFuncs = new AspNetCoreService<LargeItem>(
-                port: port++,
-                format: SerializerType.JsonNet,
-                useHttpClient: true,
-                itemCount: ItemCount
-            );
-            _largeAspNetCoreJsonNetServiceFuncs.Start();
-
             _largeAspNetCoreJsonNetSuite = new RestBenchmarkSuite<LargeItem>(
                 port: port++,
                 itemCount: ItemCount,
@@ -279,14 +262,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                 host: "AspNetCore"
             );
             _largeAspNetCoreJsonNetSuite.Start();
-
-            _largeAspNetCoreMessagePackServiceFuncs = new AspNetCoreService<LargeItem>(
-                port: port++,
-                format: SerializerType.MessagePack,
-                useHttpClient: true,
-                itemCount: ItemCount
-            );
-            _largeAspNetCoreMessagePackServiceFuncs.Start();
 
             _largeAspNetCoreMessagePackSuite = new RestBenchmarkSuite<LargeItem>(
                 port: port++,
@@ -296,13 +271,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _largeAspNetCoreMessagePackSuite.Start();
 
-            _largeAspNetCoreXmlService = new AspNetCoreService<LargeItem>(
+            _largeAspNetCoreXmlSuite = new RestBenchmarkSuite<LargeItem>(
                 port: port++,
-                format: SerializerType.Xml,
-                useHttpClient: true,
-                itemCount: ItemCount
+                itemCount: ItemCount,
+                format: "Xml",
+                host: "AspNetCore"
             );
-            _largeAspNetCoreXmlService.Start();
+            _largeAspNetCoreXmlSuite.Start();
 
             _largeAspNetCoreUtf8JsonService = new AspNetCoreService<LargeItem>(
                 port: port++,
@@ -351,11 +326,9 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _largeWebApiUtf8JsonService?.Stop();
             _largeWebApiMessagePackHttpWebRequestService?.Stop();
             _largeWebApiZeroFormatterHttpWebRequestService?.Stop();
-            _largeAspNetCoreJsonNetServiceFuncs?.Stop();
             _largeAspNetCoreJsonNetSuite?.Stop();
-            _largeAspNetCoreMessagePackServiceFuncs?.Stop();
             _largeAspNetCoreMessagePackSuite?.Stop();
-            _largeAspNetCoreXmlService?.Stop();
+            _largeAspNetCoreXmlSuite?.Stop();
             _largeAspNetCoreUtf8JsonService?.Stop();
             _largeAspNetCoreZeroFormatterHttpWebRequestService?.Stop();
         }
@@ -366,13 +339,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _smallTextWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<SmallItem> SmallWcfWebXml()
         {
             return _smallWebXmlWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<SmallItem> SmallWcfWebJson()
         {
             return _smallWebJsonWcfService.Invoke();
@@ -390,55 +363,55 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _smallNetTcpWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallWebApiJsonNet()
         {
             return _smallWebApiJsonNetService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallWebApiMessagePack()
         {
             return _smallWebApiMessagePackService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallWebApiXml()
         {
             return _smallWebApiXmlService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallWebApiUtf8Json()
         {
             return _smallWebApiUtf8JsonService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<SmallItem> SmallWebApiMessagePackHttpWebRequest()
         {
             return _smallWebApiMessagePackHttpWebRequestService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallAspNetCoreJsonNet()
         {
             return _smallAspNetCoreJsonNetService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallAspNetCoreMessagePack()
         {
             return _smallAspNetCoreMessagePackService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallAspNetCoreXml()
         {
             return _smallAspNetCoreXmlService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<SmallItem>> SmallAspNetCoreUtf8Json()
         {
             return _smallAspNetCoreUtf8JsonService.InvokeAsync();
@@ -450,61 +423,61 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _smallAspNetCoreMessagePackHttpWebRequestService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWcfText()
         {
             return _largeTextWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWcfWebXml()
         {
             return _largeWebXmlWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWcfWebJson()
         {
             return _largeWebJsonWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWcfBinary()
         {
             return _largeBinaryWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWcfNetTcp()
         {
             return _largeNetTcpWcfService.Invoke();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeWebApiJsonNet()
         {
             return _largeWebApiJsonNetService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeWebApiMessagePack()
         {
             return _largeWebApiMessagePackService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeWebApiXml()
         {
             return _largeWebApiXmlService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeWebApiUtf8Json()
         {
             return _largeWebApiUtf8JsonService.InvokeAsync();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWebApiMessagePackHttpWebRequest()
         {
             return _largeWebApiMessagePackHttpWebRequestService.Invoke();
@@ -516,97 +489,115 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _largeWebApiZeroFormatterHttpWebRequestService.Invoke();
         }
 
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreJsonNetFuncs()
-        {
-            return _largeAspNetCoreJsonNetServiceFuncs.InvokeAsync();
-        }
-
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreJsonNetHttpClient()
         {
             return _largeAspNetCoreJsonNetSuite.InvokeHttpClient();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreJsonNetHttpClientAsync()
         {
             return _largeAspNetCoreJsonNetSuite.InvokeHttpClientAsync();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreJsonNetHttpWebRequest()
         {
             return _largeAspNetCoreJsonNetSuite.InvokeHttpWebRequest();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreJsonNetHttpClient()
         {
             return _largeAspNetCoreJsonNetSuite.InvokePrecomputedHttpClient();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedAspNetCoreJsonNetHttpClientAsync()
         {
             return _largeAspNetCoreJsonNetSuite.InvokePrecomputedHttpClientAsync();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreJsonNetHttpWebRequest()
         {
             return _largeAspNetCoreJsonNetSuite.InvokePrecomputedHttpWebRequest();
         }
         
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreMessagePackFuncs()
-        {
-            return _largeAspNetCoreMessagePackServiceFuncs.InvokeAsync();
-        }
-
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreMessagePackHttpClient()
         {
             return _largeAspNetCoreMessagePackSuite.InvokeHttpClient();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreMessagePackHttpClientAsync()
         {
             return _largeAspNetCoreMessagePackSuite.InvokeHttpClientAsync();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreMessagePackHttpWebRequest()
         {
             return _largeAspNetCoreMessagePackSuite.InvokeHttpWebRequest();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreMessagePackHttpClient()
         {
             return _largeAspNetCoreMessagePackSuite.InvokePrecomputedHttpClient();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedAspNetCoreMessagePackHttpClientAsync()
         {
             return _largeAspNetCoreMessagePackSuite.InvokePrecomputedHttpClientAsync();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreMessagePackHttpWebRequest()
         {
             return _largeAspNetCoreMessagePackSuite.InvokePrecomputedHttpWebRequest();
         }
 
-        ////[Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreXml()
+        [Benchmark]
+        public IReadOnlyCollection<LargeItem> LargeAspNetCoreXmlHttpClient()
         {
-            return _largeAspNetCoreXmlService.InvokeAsync();
+            return _largeAspNetCoreXmlSuite.InvokeHttpClient();
         }
 
-        ////[Benchmark]
+        //[Benchmark]
+        public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreXmlHttpClientAsync()
+        {
+            return _largeAspNetCoreXmlSuite.InvokeHttpClientAsync();
+        }
+
+        [Benchmark]
+        public IReadOnlyCollection<LargeItem> LargeAspNetCoreXmlHttpWebRequest()
+        {
+            return _largeAspNetCoreXmlSuite.InvokeHttpWebRequest();
+        }
+
+        //[Benchmark]
+        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreXmlHttpClient()
+        {
+            return _largeAspNetCoreXmlSuite.InvokePrecomputedHttpClient();
+        }
+
+        //[Benchmark]
+        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedAspNetCoreXmlHttpClientAsync()
+        {
+            return _largeAspNetCoreXmlSuite.InvokePrecomputedHttpClientAsync();
+        }
+
+        [Benchmark]
+        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreXmlHttpWebRequest()
+        {
+            return _largeAspNetCoreXmlSuite.InvokePrecomputedHttpWebRequest();
+        }
+
+        //[Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeAspNetCoreUtf8Json()
         {
             return _largeAspNetCoreUtf8JsonService.InvokeAsync();
@@ -645,11 +636,9 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WebApiService<LargeItem> _largeWebApiUtf8JsonService;
         private WebApiService<LargeItem> _largeWebApiMessagePackHttpWebRequestService;
         private WebApiService<LargeItem> _largeWebApiZeroFormatterHttpWebRequestService;
-        private AspNetCoreService<LargeItem> _largeAspNetCoreJsonNetServiceFuncs;
         private RestBenchmarkSuite<LargeItem> _largeAspNetCoreJsonNetSuite;
         private RestBenchmarkSuite<LargeItem> _largeAspNetCoreMessagePackSuite;
-        private AspNetCoreService<LargeItem> _largeAspNetCoreMessagePackServiceFuncs;
-        private AspNetCoreService<LargeItem> _largeAspNetCoreXmlService;
+        private RestBenchmarkSuite<LargeItem> _largeAspNetCoreXmlSuite;
         private AspNetCoreService<LargeItem> _largeAspNetCoreUtf8JsonService;
         private AspNetCoreService<LargeItem> _largeAspNetCoreZeroFormatterHttpWebRequestService;
     }
