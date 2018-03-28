@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,13 +14,11 @@ using ZeroFormatter;
 
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
-    public class AspNetCoreService<T>: RestServiceBase<T>
+    public abstract class AspNetCoreService<T>: RestServiceBase<T>
         where T: class, new()
     {
         public override void Start()
         {
-            _startup = new AspNetCoreStartup<T>(_format);
-
             _host = new WebHostBuilder()
                    .UseKestrel(opt => opt.Limits.MaxRequestBodySize = 180000000)
                    .ConfigureServices(ConfigureServices)
@@ -35,7 +32,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         protected virtual void ConfigureServices(IServiceCollection services)
         {
-            _startup.ConfigureServices(services);
         }
 
         protected virtual void Configure(IApplicationBuilder app)
@@ -48,67 +44,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _host?.StopAsync().Wait();
         }
 
-        public AspNetCoreService(int port, SerializerType format, bool useHttpClient, int itemCount)
+        protected AspNetCoreService(int port, SerializerType format, bool useHttpClient, int itemCount)
             : base(port, format, useHttpClient, itemCount)
         {
             _port = port;
-            _format = format;
         }
 
         private readonly int _port;
-        private readonly SerializerType _format;
         private IWebHost _host;
-        private AspNetCoreStartup<T> _startup;
-    }
-
-    public class AspNetCoreStartup<T>
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc(opt =>
-                            {
-                                opt.InputFormatters.RemoveType<JsonPatchInputFormatter>();
-
-                                var jsonInputFormatter = opt.InputFormatters.OfType<JsonInputFormatter>().First();
-                                var jsonOutputFormatter = opt.OutputFormatters.OfType<JsonOutputFormatter>().First();
-
-                                opt.InputFormatters.Clear();
-                                opt.OutputFormatters.Clear();
-
-                                switch(_format)
-                                {
-                                    case SerializerType.Xml:
-                                        opt.InputFormatters.Add(new XmlSerializerInputFormatter());
-                                        opt.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-                                        break;
-                                    case SerializerType.JsonNet:
-                                        opt.InputFormatters.Add(jsonInputFormatter);
-                                        opt.OutputFormatters.Add(jsonOutputFormatter);
-                                        break;
-                                    case SerializerType.MessagePack:
-                                        opt.InputFormatters.Add(new MessagePackInputFormatter<T>());
-                                        opt.OutputFormatters.Add(new MessagePackOutputFormatter<T>());
-                                        break;
-                                    case SerializerType.Utf8Json:
-                                        opt.InputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonInputFormatter());
-                                        opt.OutputFormatters.Add(new Utf8Json.AspNetCoreMvcFormatter.JsonOutputFormatter());
-                                        break;
-                                    case SerializerType.ZeroFormatter:
-                                        opt.InputFormatters.Add(new ZeroFormatterInputFormatter<T>());
-                                        opt.OutputFormatters.Add(new ZeroFormatterOutputFormatter<T>());
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
-                                }
-                            });
-        }
-
-        public AspNetCoreStartup(SerializerType format)
-        {
-            _format = format;
-        }
-
-        private readonly SerializerType _format;
     }
 
     public class AspNetCoreController: Controller
