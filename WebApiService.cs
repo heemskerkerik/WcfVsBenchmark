@@ -14,14 +14,47 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
     {
         public override void Start()
         {
-            var startup = new WebApiStartup<T>(_format);
-            _app = WebApp.Start($"http://localhost:{_port}", startup.Configuration);
+            _app = WebApp.Start($"http://localhost:{_port}", Configuration);
             InitializeClients();
         }
 
         public override void Stop()
         {
             _app.Dispose();
+        }
+
+        public virtual void Configuration(IAppBuilder app)
+        {
+            var config = new HttpConfiguration();
+
+            config.MapHttpAttributeRoutes();
+            config.Formatters.Clear();
+
+            config.Formatters.Add(GetMediaTypeFormatter());
+
+            app.UseWebApi(config);
+        }
+
+        public virtual MediaTypeFormatter GetMediaTypeFormatter()
+        {
+            switch(_format)
+            {
+                case SerializerType.Xml:
+                    return new XmlMediaTypeFormatter
+                           {
+                               UseXmlSerializer = true,
+                           };
+                case SerializerType.JsonNet:
+                    return new JsonMediaTypeFormatter();
+                case SerializerType.MessagePack:
+                    return new MessagePackMediaTypeFormatter<T>();
+                case SerializerType.Utf8Json:
+                    return new Utf8JsonMediaTypeFormatter<T>();
+                case SerializerType.ZeroFormatter:
+                    return new ZeroFormatterMediaTypeFormatter<T>();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public WebApiService(int port, SerializerType format, bool useHttpClient, int itemCount)
@@ -51,47 +84,76 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class WebApiStartup<T>
+    public class JsonNetWebApiService<T>: WebApiService<T>
+        where T: class, new()
     {
-        public void Configuration(IAppBuilder app)
+        public JsonNetWebApiService(int port, int itemCount)
+            : base(port, SerializerType.JsonNet, true, itemCount)
         {
-            var config = new HttpConfiguration();
-
-            config.MapHttpAttributeRoutes();
-            config.Formatters.Clear();
-
-            switch(_format)
-            {
-                case SerializerType.Xml:
-                    config.Formatters.Add(new XmlMediaTypeFormatter
-                                          {
-                                              UseXmlSerializer = true,
-                                          });
-                    break;
-                case SerializerType.JsonNet:
-                    config.Formatters.Add(new JsonMediaTypeFormatter());
-                    break;
-                case SerializerType.MessagePack:
-                    config.Formatters.Add(new MessagePackMediaTypeFormatter<T>());
-                    break;
-                case SerializerType.Utf8Json:
-                    config.Formatters.Add(new Utf8JsonMediaTypeFormatter<T>());
-                    break;
-                case SerializerType.ZeroFormatter:
-                    config.Formatters.Add(new ZeroFormatterMediaTypeFormatter<T>());
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            app.UseWebApi(config);
         }
 
-        public WebApiStartup(SerializerType format)
+        public override MediaTypeFormatter GetMediaTypeFormatter()
         {
-            _format = format;
+            return new JsonMediaTypeFormatter();
+        }
+    }
+
+    public class XmlWebApiService<T>: WebApiService<T>
+        where T: class, new()
+    {
+        public XmlWebApiService(int port, int itemCount)
+            : base(port, SerializerType.Xml, true, itemCount)
+        {
         }
 
-        private readonly SerializerType _format;
+        public override MediaTypeFormatter GetMediaTypeFormatter()
+        {
+            return new XmlMediaTypeFormatter
+                   {
+                       UseXmlSerializer = true,
+                   };
+        }
+    }
+
+    public class MessagePackWebApiService<T>: WebApiService<T>
+        where T: class, new()
+    {
+        public MessagePackWebApiService(int port, int itemCount)
+            : base(port, SerializerType.JsonNet, true, itemCount)
+        {
+        }
+
+        public override MediaTypeFormatter GetMediaTypeFormatter()
+        {
+            return new MessagePackMediaTypeFormatter<T>();
+        }
+    }
+
+    public class Utf8JsonWebApiService<T>: WebApiService<T>
+        where T: class, new()
+    {
+        public Utf8JsonWebApiService(int port, int itemCount)
+            : base(port, SerializerType.Utf8Json, true, itemCount)
+        {
+        }
+
+        public override MediaTypeFormatter GetMediaTypeFormatter()
+        {
+            return new Utf8JsonMediaTypeFormatter<T>();
+        }
+    }
+
+    public class ZeroFormatterWebApiService<T>: WebApiService<T>
+        where T: class, new()
+    {
+        public ZeroFormatterWebApiService(int port, int itemCount)
+            : base(port, SerializerType.ZeroFormatter, true, itemCount)
+        {
+        }
+
+        public override MediaTypeFormatter GetMediaTypeFormatter()
+        {
+            return new ZeroFormatterMediaTypeFormatter<T>();
+        }
     }
 }
