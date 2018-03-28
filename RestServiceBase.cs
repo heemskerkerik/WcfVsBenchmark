@@ -79,6 +79,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             var request = WebRequest.CreateHttp($"http://localhost:{_port}/api/operation/{typeof(T).Name}?itemCount={_itemCountToRequest}");
             request.ContentType = "application/x-msgpack";
             request.Method = HttpMethods.Post;
+            request.KeepAlive = true;
 
             using(var requestStream = request.GetRequestStream())
             {
@@ -217,6 +218,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _client = new HttpClient
                       {
                           BaseAddress = new Uri($"http://localhost:{Port}"),
+                          DefaultRequestHeaders =
+                          {
+                              ConnectionClose = false,
+                              ExpectContinue = false,
+                          },
                       };
         }
 
@@ -268,6 +274,8 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             var request = WebRequest.CreateHttp(AbsoluteUri);
             request.Method = HttpMethods.Post;
             request.ContentType = RequestContentType;
+            request.KeepAlive = true;
+            request.Expect = null;
 
             using(var requestStream = request.GetRequestStream())
             {
@@ -345,7 +353,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
     public abstract class PrecomputedRestClientBase<T>: RestClientBase<T>
     {
-        private byte[] _dataToSend;
+        protected byte[] DataToSend { get; private set; }
 
         protected abstract string RequestContentType { get; }
 
@@ -356,13 +364,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             using(var stream = new MemoryStream())
             {
                 SerializeItems(stream);
-                _dataToSend = stream.ToArray();
+                DataToSend = stream.ToArray();
             }
         }
 
         protected Stream CreateStreamWithDataToSend()
         {
-            return new MemoryStream(_dataToSend);
+            return new MemoryStream(DataToSend);
         }
 
         protected PrecomputedRestClientBase(int port, int itemCount)
@@ -382,6 +390,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _client = new HttpClient
                       {
                           BaseAddress = new Uri($"http://localhost:{Port}"),
+                          DefaultRequestHeaders =
+                          {
+                              ConnectionClose = false,
+                              ExpectContinue = false,
+                          }
                       };
         }
 
@@ -405,7 +418,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         private HttpContent CreateHttpContent()
         {
-            return new StreamContent(CreateStreamWithDataToSend())
+            return new ByteArrayContent(DataToSend)
                    {
                        Headers =
                        {
@@ -416,10 +429,15 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public async Task<IReadOnlyCollection<T>> InvokeAsync()
         {
+            var request = new HttpRequestMessage();
+
             var response = await _client.PostAsync(RelativeUri, CreateHttpContent());
             response.EnsureSuccessStatusCode();
 
-            await response.Content.ReadAsByteArrayAsync();
+            using(var stream = await response.Content.ReadAsStreamAsync())
+            {
+                stream.CopyTo(Stream.Null);
+            }
 
             return new List<T>();
         }
@@ -468,11 +486,13 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             var request = WebRequest.CreateHttp(AbsoluteUri);
             request.Method = HttpMethods.Post;
             request.ContentType = RequestContentType;
+            request.SendChunked = false;
+            request.KeepAlive = true;
+            request.ContentLength = DataToSend.Length;
 
             using(var requestStream = request.GetRequestStream())
-            using(var sourceStream = CreateStreamWithDataToSend())
             {
-                sourceStream.CopyTo(requestStream);
+                requestStream.Write(DataToSend, 0, DataToSend.Length);
             }
 
             using(var response = (HttpWebResponse) request.GetResponse())
