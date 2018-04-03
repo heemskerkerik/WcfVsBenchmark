@@ -9,13 +9,11 @@ using Owin;
 
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
-    public class WebApiService<T>: RestServiceBase<T>
-        where T: class, new()
+    public abstract class WebApiService: RestServiceBase
     {
         public override void Start()
         {
             _app = WebApp.Start($"http://localhost:{_port}", Configuration);
-            InitializeClients();
         }
 
         public override void Stop()
@@ -35,37 +33,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             app.UseWebApi(config);
         }
 
-        public virtual MediaTypeFormatter GetMediaTypeFormatter()
-        {
-            switch(_format)
-            {
-                case SerializerType.Xml:
-                    return new XmlMediaTypeFormatter
-                           {
-                               UseXmlSerializer = true,
-                           };
-                case SerializerType.JsonNet:
-                    return new JsonMediaTypeFormatter();
-                case SerializerType.MessagePack:
-                    return new MessagePackMediaTypeFormatter<T>();
-                case SerializerType.Utf8Json:
-                    return new Utf8JsonMediaTypeFormatter<T>();
-                case SerializerType.ZeroFormatter:
-                    return new ZeroFormatterMediaTypeFormatter<T>();
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        public abstract MediaTypeFormatter GetMediaTypeFormatter();
 
-        public WebApiService(int port, SerializerType format, bool useHttpClient, int itemCount)
-            : base(port, format, useHttpClient, itemCount)
+        protected WebApiService(int port)
         {
             _port = port;
-            _format = format;
         }
 
         private readonly int _port;
-        private readonly SerializerType _format;
         private IDisposable _app;
     }
 
@@ -82,13 +57,37 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             return Cache.LargeItems.Take(itemCount).ToArray();
         }
+
+        [HttpPost, Route("api/operation/MessagePackSmallItem")]
+        public MessagePackSmallItem[] ItemOperation([FromBody] MessagePackSmallItem[] items, int itemCount)
+        {
+            return Cache.MessagePackSmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost, Route("api/operation/MessagePackLargeItem")]
+        public MessagePackLargeItem[] LargeItemOperation([FromBody] MessagePackLargeItem[] items, int itemCount)
+        {
+            return Cache.MessagePackLargeItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost, Route("api/operation/ZeroFormatterSmallItem")]
+        public ZeroFormatterSmallItem[] ItemOperation([FromBody] ZeroFormatterSmallItem[] items, int itemCount)
+        {
+            return Cache.ZeroFormatterSmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost, Route("api/operation/ZeroFormatterLargeItem")]
+        public ZeroFormatterLargeItem[] LargeItemOperation([FromBody] ZeroFormatterLargeItem[] items, int itemCount)
+        {
+            return Cache.ZeroFormatterLargeItems.Take(itemCount).ToArray();
+        }
     }
 
-    public class JsonNetWebApiService<T>: WebApiService<T>
+    public class JsonNetWebApiService<T>: WebApiService
         where T: class, new()
     {
-        public JsonNetWebApiService(int port, int itemCount)
-            : base(port, SerializerType.JsonNet, true, itemCount)
+        public JsonNetWebApiService(int port)
+            : base(port)
         {
         }
 
@@ -98,11 +97,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class XmlWebApiService<T>: WebApiService<T>
+    public class XmlWebApiService<T>: WebApiService
         where T: class, new()
     {
-        public XmlWebApiService(int port, int itemCount)
-            : base(port, SerializerType.Xml, true, itemCount)
+        public XmlWebApiService(int port)
+            : base(port)
         {
         }
 
@@ -115,11 +114,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class MessagePackWebApiService<T>: WebApiService<T>
+    public class MessagePackWebApiService<T>: WebApiService
         where T: class, new()
     {
-        public MessagePackWebApiService(int port, int itemCount)
-            : base(port, SerializerType.JsonNet, true, itemCount)
+        public MessagePackWebApiService(int port)
+            : base(port)
         {
         }
 
@@ -129,11 +128,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class Utf8JsonWebApiService<T>: WebApiService<T>
+    public class Utf8JsonWebApiService<T>: WebApiService
         where T: class, new()
     {
-        public Utf8JsonWebApiService(int port, int itemCount)
-            : base(port, SerializerType.Utf8Json, true, itemCount)
+        public Utf8JsonWebApiService(int port)
+            : base(port)
         {
         }
 
@@ -143,11 +142,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class ZeroFormatterWebApiService<T>: WebApiService<T>
+    public class ZeroFormatterWebApiService<T>: WebApiService
         where T: class, new()
     {
-        public ZeroFormatterWebApiService(int port, int itemCount)
-            : base(port, SerializerType.ZeroFormatter, true, itemCount)
+        public ZeroFormatterWebApiService(int port)
+            : base(port)
         {
         }
 

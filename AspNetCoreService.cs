@@ -14,8 +14,7 @@ using ZeroFormatter;
 
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
-    public abstract class AspNetCoreService<T>: RestServiceBase<T>
-        where T: class, new()
+    public abstract class AspNetCoreService: RestServiceBase
     {
         public override void Start()
         {
@@ -26,8 +25,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                    .UseUrls($"http://localhost:{_port}")
                    .Build();
             _host.Start();
-
-            InitializeClients();
         }
 
         protected virtual void ConfigureServices(IServiceCollection services)
@@ -44,8 +41,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _host?.StopAsync().Wait();
         }
 
-        protected AspNetCoreService(int port, SerializerType format, bool useHttpClient, int itemCount)
-            : base(port, format, useHttpClient, itemCount)
+        protected AspNetCoreService(int port)
         {
             _port = port;
         }
@@ -169,11 +165,10 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class JsonNetAspNetCoreService<T>: AspNetCoreService<T>
-        where T: class, new()
+    public class JsonNetAspNetCoreService<T>: AspNetCoreService
     {
-        public JsonNetAspNetCoreService(int port, int itemCount)
-            : base(port, SerializerType.JsonNet, true, itemCount)
+        public JsonNetAspNetCoreService(int port)
+            : base(port)
         {
         }
 
@@ -194,11 +189,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class MessagePackAspNetCoreService<T>: AspNetCoreService<T>
+    public class MessagePackAspNetCoreService<T>: AspNetCoreService
         where T: class, new()
     {
-        public MessagePackAspNetCoreService(int port, int itemCount)
-            : base(port, SerializerType.MessagePack, true, itemCount)
+        public MessagePackAspNetCoreService(int port)
+            : base(port)
         {
         }
 
@@ -215,11 +210,10 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class XmlAspNetCoreService<T>: AspNetCoreService<T>
-        where T: class, new()
+    public class XmlAspNetCoreService<T>: AspNetCoreService
     {
-        public XmlAspNetCoreService(int port, int itemCount)
-            : base(port, SerializerType.Xml, true, itemCount)
+        public XmlAspNetCoreService(int port)
+            : base(port)
         {
         }
 
@@ -236,11 +230,10 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class Utf8JsonAspNetCoreService<T>: AspNetCoreService<T>
-        where T: class, new()
+    public class Utf8JsonAspNetCoreService<T>: AspNetCoreService
     {
-        public Utf8JsonAspNetCoreService(int port, int itemCount)
-            : base(port, SerializerType.Utf8Json, true, itemCount)
+        public Utf8JsonAspNetCoreService(int port)
+            : base(port)
         {
         }
 
@@ -257,11 +250,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class ZeroFormatterAspNetCoreService<T>: AspNetCoreService<T>
+    public class ZeroFormatterAspNetCoreService<T>: AspNetCoreService
         where T: class, new()
     {
-        public ZeroFormatterAspNetCoreService(int port, int itemCount)
-            : base(port, SerializerType.Utf8Json, true, itemCount)
+        public ZeroFormatterAspNetCoreService(int port)
+            : base(port)
         {
         }
 

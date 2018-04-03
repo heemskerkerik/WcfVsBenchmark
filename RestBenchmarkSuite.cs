@@ -60,12 +60,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _precomputedHttpWebRequestClient = CreatePrecomputedHttpWebRequestClient(port, itemCount, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}PrecomputedHttpWebRequestClient`1").MakeGenericType(typeof(T)));
         }
 
-        private RestServiceBase<T> CreateService(int port, int itemCount, Type serviceType)
+        private RestServiceBase CreateService(int port, int itemCount, Type serviceType)
         {
-            return (RestServiceBase<T>) Activator.CreateInstance(
+            return (RestServiceBase) Activator.CreateInstance(
                 serviceType,
-                port,
-                itemCount
+                port
             );
         }
 
@@ -105,7 +104,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
         }
 
-        private readonly RestServiceBase<T> _service;
+        private readonly RestServiceBase _service;
         private readonly HttpClientRestClientBase<T> _httpClientClient;
         private readonly HttpWebRequestClientBase<T> _httpWebRequestClient;
         private readonly PrecomputedHttpClientRestClientBase<T> _precomputedHttpClientClient;
