@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -24,8 +24,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public override Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
         {
-            var result = ZeroFormatterSerializer.Deserialize<T[]>(readStream);
-            return Task.FromResult<object>(result);
+            using(var copyStream = readStream.CanSeek ? new MemoryStream((int) readStream.Length) : new MemoryStream())
+            {
+                readStream.CopyTo(copyStream);
+                copyStream.Position = 0;
+
+                var result = ZeroFormatterSerializer.Deserialize<T[]>(copyStream);
+                return Task.FromResult<object>(result);
+            }
         }
 
         public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, TransportContext transportContext)
