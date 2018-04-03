@@ -80,6 +80,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _smallNetTcpWcfService.Start();
 
+            _smallMsgPackCliWcfService = new MsgPackCliWcfService<MsgPackCliSmallItem>(
+                port: port++,
+                itemCount: ItemCount
+            );
+            _smallMsgPackCliWcfService.Start();
+
             _smallWebApiJsonNetSuite = new RestBenchmarkSuite<SmallItem>(
                 port: port++,
                 itemCount: ItemCount,
@@ -206,6 +212,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _largeNetTcpWcfService.Start();
 
+            _largeMsgPackCliWcfService = new MsgPackCliWcfService<MsgPackCliLargeItem>(
+                port: port++,
+                itemCount: ItemCount
+            );
+            _largeMsgPackCliWcfService.Start();
+
             _largeWebApiJsonNetSuite = new RestBenchmarkSuite<LargeItem>(
                 port: port++,
                 itemCount: ItemCount,
@@ -311,6 +323,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _smallWebJsonWcfService?.Stop();
             _smallBinaryWcfService?.Stop();
             _smallNetTcpWcfService?.Stop();
+            _smallMsgPackCliWcfService?.Stop();
             _smallWebApiJsonNetSuite?.Stop();
             _smallWebApiMessagePackSuite?.Stop();
             _smallWebApiMsgPackCliSuite?.Stop();
@@ -328,6 +341,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             _largeWebJsonWcfService?.Stop();
             _largeBinaryWcfService?.Stop();
             _largeNetTcpWcfService?.Stop();
+            _largeMsgPackCliWcfService?.Stop();
             _largeWebApiJsonNetSuite?.Stop();
             _largeWebApiMessagePackSuite?.Stop();
             _largeWebApiMsgPackCliSuite?.Stop();
@@ -381,6 +395,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<SmallItem> SmallWcfNetTcp()
         {
             return _smallNetTcpWcfService.Invoke();
+        }
+
+        [Benchmark]
+        public IReadOnlyCollection<MsgPackCliSmallItem> SmallWcfMsgPackCli()
+        {
+            return _smallMsgPackCliWcfService.Invoke();
         }
 
         [Benchmark]
@@ -846,6 +866,12 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
+        public IReadOnlyCollection<MsgPackCliLargeItem> LargeWcfMsgPackCli()
+        {
+            return _largeMsgPackCliWcfService.Invoke();
+        }
+
+        [Benchmark]
         public IReadOnlyCollection<LargeItem> LargeWebApiJsonNetHttpClient()
         {
             return _largeWebApiJsonNetSuite.InvokeHttpClient();
@@ -1282,6 +1308,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WebJsonWcfService<SmallItem> _smallWebJsonWcfService;
         private BinaryMessageEncodingWcfService<SmallItem> _smallBinaryWcfService;
         private NetTcpWcfService<SmallItem> _smallNetTcpWcfService;
+        private MsgPackCliWcfService<MsgPackCliSmallItem> _smallMsgPackCliWcfService;
         private RestBenchmarkSuite<SmallItem> _smallWebApiJsonNetSuite;
         private RestBenchmarkSuite<MessagePackSmallItem> _smallWebApiMessagePackSuite;
         private RestBenchmarkSuite<MsgPackCliSmallItem> _smallWebApiMsgPackCliSuite;
@@ -1299,6 +1326,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private WebJsonWcfService<LargeItem> _largeWebJsonWcfService;
         private BinaryMessageEncodingWcfService<LargeItem> _largeBinaryWcfService;
         private NetTcpWcfService<LargeItem> _largeNetTcpWcfService;
+        private MsgPackCliWcfService<MsgPackCliLargeItem> _largeMsgPackCliWcfService;
         private RestBenchmarkSuite<LargeItem> _largeWebApiJsonNetSuite;
         private RestBenchmarkSuite<MessagePackLargeItem> _largeWebApiMessagePackSuite;
         private RestBenchmarkSuite<MsgPackCliLargeItem> _largeWebApiMsgPackCliSuite;

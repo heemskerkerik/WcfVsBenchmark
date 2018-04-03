@@ -5,6 +5,8 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Web;
 
+using MsgPack.Wcf;
+
 namespace WcfVsWebApiVsAspNetCoreBenchmark
 {
     public abstract class WcfService<T>
@@ -107,7 +109,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         T[] Operation(T[] items, int itemCount);
     }
 
-    public class WcfServiceImpl: IWcfService<SmallItem>, IWcfService<LargeItem>
+    public class WcfServiceImpl: IWcfService<SmallItem>, IWcfService<LargeItem>, IWcfService<MsgPackCliSmallItem>, IWcfService<MsgPackCliLargeItem>
     {
         public SmallItem[] Operation(SmallItem[] items, int itemCount)
         {
@@ -117,6 +119,16 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public LargeItem[] Operation(LargeItem[] items, int itemCount)
         {
             return Cache.LargeItems.Take(itemCount).ToArray();
+        }
+
+        public MsgPackCliSmallItem[] Operation(MsgPackCliSmallItem[] items, int itemCount)
+        {
+            return Cache.MsgPackCliSmallItems.Take(itemCount).ToArray();
+        }
+
+        public MsgPackCliLargeItem[] Operation(MsgPackCliLargeItem[] items, int itemCount)
+        {
+            return Cache.MsgPackCliLargeItems.Take(itemCount).ToArray();
         }
     }
 
@@ -234,5 +246,29 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         protected override string Uri => $"net.tcp://localhost:{Port}";
+    }
+
+    public class MsgPackCliWcfService<T>: WcfService<T>
+        where T: class, new()
+    {
+        public MsgPackCliWcfService(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override Binding CreateBinding()
+        {
+            return new BasicHttpBinding { MaxReceivedMessageSize = 1024 * 1024 * 1024 };
+        }
+
+        protected override void ConfigureClient(WcfServiceClient<T> client)
+        {
+            client.ChannelFactory.Endpoint.Behaviors.Add(new MsgPackEndpointBehavior());
+        }
+
+        protected override void ConfigureEndpoint(ServiceEndpoint endpoint)
+        {
+            endpoint.Behaviors.Add(new MsgPackEndpointBehavior());
+        }
     }
 }
