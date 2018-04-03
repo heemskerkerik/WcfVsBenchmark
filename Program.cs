@@ -50,37 +50,32 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             int port = 9001;
 
-            _smallTextWcfService = new WcfService<SmallItem>(
+            _smallTextWcfService = new TextWcfService<SmallItem>(
                 port: port++,
-                bindingType: WcfBindingType.BasicText,
                 itemCount: ItemCount
             );
             _smallTextWcfService.Start();
 
-            _smallWebXmlWcfService = new WcfService<SmallItem>(
+            _smallWebXmlWcfService = new WebXmlWcfService<SmallItem>(
                 port: port++,
-                bindingType: WcfBindingType.WebXml,
                 itemCount: ItemCount
             );
             _smallWebXmlWcfService.Start();
 
-            _smallWebJsonWcfService = new WcfService<SmallItem>(
+            _smallWebJsonWcfService = new WebJsonWcfService<SmallItem>(
                 port: port++,
-                bindingType: WcfBindingType.WebJson,
                 itemCount: ItemCount
             );
             _smallWebJsonWcfService.Start();
 
-            _smallBinaryWcfService = new WcfService<SmallItem>(
+            _smallBinaryWcfService = new BinaryMessageEncodingWcfService<SmallItem>(
                 port: port++,
-                bindingType: WcfBindingType.BinaryMessageEncoding,
                 itemCount: ItemCount
             );
             _smallBinaryWcfService.Start();
 
-            _smallNetTcpWcfService = new WcfService<SmallItem>(
+            _smallNetTcpWcfService = new NetTcpWcfService<SmallItem>(
                 port: port++,
-                bindingType: WcfBindingType.NetTcp,
                 itemCount: ItemCount
             );
             _smallNetTcpWcfService.Start();
@@ -165,37 +160,32 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             );
             _smallAspNetCoreZeroFormatterSuite.Start();
 
-            _largeTextWcfService = new WcfService<LargeItem>(
+            _largeTextWcfService = new TextWcfService<LargeItem>(
                 port: port++,
-                bindingType: WcfBindingType.BasicText,
                 itemCount: ItemCount
             );
             _largeTextWcfService.Start();
 
-            _largeWebXmlWcfService = new WcfService<LargeItem>(
+            _largeWebXmlWcfService = new WebXmlWcfService<LargeItem>(
                 port: port++,
-                bindingType: WcfBindingType.WebXml,
                 itemCount: ItemCount
             );
             _largeWebXmlWcfService.Start();
 
-            _largeWebJsonWcfService = new WcfService<LargeItem>(
+            _largeWebJsonWcfService = new WebJsonWcfService<LargeItem>(
                 port: port++,
-                bindingType: WcfBindingType.WebJson,
                 itemCount: ItemCount
             );
             _largeWebJsonWcfService.Start();
 
-            _largeBinaryWcfService = new WcfService<LargeItem>(
+            _largeBinaryWcfService = new BinaryMessageEncodingWcfService<LargeItem>(
                 port: port++,
-                bindingType: WcfBindingType.BinaryMessageEncoding,
                 itemCount: ItemCount
             );
             _largeBinaryWcfService.Start();
 
-            _largeNetTcpWcfService = new WcfService<LargeItem>(
+            _largeNetTcpWcfService = new NetTcpWcfService<LargeItem>(
                 port: port++,
-                bindingType: WcfBindingType.NetTcp,
                 itemCount: ItemCount
             );
             _largeNetTcpWcfService.Start();
@@ -1107,11 +1097,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             return _largeAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpWebRequest();
         }
 
-        private WcfService<SmallItem> _smallTextWcfService;
-        private WcfService<SmallItem> _smallWebXmlWcfService;
-        private WcfService<SmallItem> _smallWebJsonWcfService;
-        private WcfService<SmallItem> _smallBinaryWcfService;
-        private WcfService<SmallItem> _smallNetTcpWcfService;
+        private TextWcfService<SmallItem> _smallTextWcfService;
+        private WebXmlWcfService<SmallItem> _smallWebXmlWcfService;
+        private WebJsonWcfService<SmallItem> _smallWebJsonWcfService;
+        private BinaryMessageEncodingWcfService<SmallItem> _smallBinaryWcfService;
+        private NetTcpWcfService<SmallItem> _smallNetTcpWcfService;
         private RestBenchmarkSuite<SmallItem> _smallWebApiJsonNetSuite;
         private RestBenchmarkSuite<MessagePackSmallItem> _smallWebApiMessagePackSuite;
         private RestBenchmarkSuite<SmallItem> _smallWebApiXmlSuite;
@@ -1122,11 +1112,11 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         private RestBenchmarkSuite<SmallItem> _smallAspNetCoreXmlSuite;
         private RestBenchmarkSuite<SmallItem> _smallAspNetCoreUtf8JsonSuite;
         private RestBenchmarkSuite<ZeroFormatterSmallItem> _smallAspNetCoreZeroFormatterSuite;
-        private WcfService<LargeItem> _largeTextWcfService;
-        private WcfService<LargeItem> _largeWebXmlWcfService;
-        private WcfService<LargeItem> _largeWebJsonWcfService;
-        private WcfService<LargeItem> _largeBinaryWcfService;
-        private WcfService<LargeItem> _largeNetTcpWcfService;
+        private TextWcfService<LargeItem> _largeTextWcfService;
+        private WebXmlWcfService<LargeItem> _largeWebXmlWcfService;
+        private WebJsonWcfService<LargeItem> _largeWebJsonWcfService;
+        private BinaryMessageEncodingWcfService<LargeItem> _largeBinaryWcfService;
+        private NetTcpWcfService<LargeItem> _largeNetTcpWcfService;
         private RestBenchmarkSuite<LargeItem> _largeWebApiJsonNetSuite;
         private RestBenchmarkSuite<MessagePackLargeItem> _largeWebApiMessagePackSuite;
         private RestBenchmarkSuite<LargeItem> _largeWebApiXmlSuite;
