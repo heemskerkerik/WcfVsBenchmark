@@ -81,6 +81,18 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             return Cache.ZeroFormatterLargeItems.Take(itemCount).ToArray();
         }
+
+        [HttpPost, Route("api/operation/MsgPackCliSmallItem")]
+        public MsgPackCliSmallItem[] ItemOperation([FromBody] MsgPackCliSmallItem[] items, int itemCount)
+        {
+            return Cache.MsgPackCliSmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost, Route("api/operation/MsgPackCliLargeItem")]
+        public MsgPackCliLargeItem[] LargeItemOperation([FromBody] MsgPackCliLargeItem[] items, int itemCount)
+        {
+            return Cache.MsgPackCliLargeItems.Take(itemCount).ToArray();
+        }
     }
 
     public class JsonNetWebApiService<T>: WebApiService
@@ -153,6 +165,20 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public override MediaTypeFormatter GetMediaTypeFormatter()
         {
             return new ZeroFormatterMediaTypeFormatter<T>();
+        }
+    }
+
+    public class MsgPackCliWebApiService<T>: WebApiService
+        where T: class, new()
+    {
+        public MsgPackCliWebApiService(int port)
+            : base(port)
+        {
+        }
+
+        public override MediaTypeFormatter GetMediaTypeFormatter()
+        {
+            return new MsgPackCliMediaTypeFormatter<T>();
         }
     }
 }

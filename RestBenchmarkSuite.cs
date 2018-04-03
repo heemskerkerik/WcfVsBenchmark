@@ -53,14 +53,14 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public RestBenchmarkSuite(int port, int itemCount, string format, string host)
         {
-            _service = CreateService(port, itemCount, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}{host}Service`1").MakeGenericType(typeof(T)));
+            _service = CreateService(port, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}{host}Service`1").MakeGenericType(typeof(T)));
             _httpClientClient = CreateHttpClientClient(port, itemCount, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}HttpClientClient`1").MakeGenericType(typeof(T)));
             _httpWebRequestClient = CreateHttpWebRequestClient(port, itemCount, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}HttpWebRequestClient`1").MakeGenericType(typeof(T)));
             _precomputedHttpClientClient = CreatePrecomputedHttpClientClient(port, itemCount, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}PrecomputedHttpClientClient`1").MakeGenericType(typeof(T)));
             _precomputedHttpWebRequestClient = CreatePrecomputedHttpWebRequestClient(port, itemCount, Type.GetType($"{nameof(WcfVsWebApiVsAspNetCoreBenchmark)}.{format}PrecomputedHttpWebRequestClient`1").MakeGenericType(typeof(T)));
         }
 
-        private RestServiceBase CreateService(int port, int itemCount, Type serviceType)
+        private RestServiceBase CreateService(int port, Type serviceType)
         {
             return (RestServiceBase) Activator.CreateInstance(
                 serviceType,

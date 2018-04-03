@@ -63,7 +63,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             return Cache.LargeItems.Take(itemCount).ToArray();
         }
-        
+
         [HttpPost("api/operation/MessagePackSmallItem")]
         public MessagePackSmallItem[] Operation([FromBody] MessagePackSmallItem[] items, int itemCount)
         {
@@ -75,7 +75,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             return Cache.MessagePackLargeItems.Take(itemCount).ToArray();
         }
-        
+
         [HttpPost("api/operation/ZeroFormatterSmallItem")]
         public ZeroFormatterSmallItem[] Operation([FromBody] ZeroFormatterSmallItem[] items, int itemCount)
         {
@@ -86,6 +86,18 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public ZeroFormatterLargeItem[] Operation([FromBody] ZeroFormatterLargeItem[] items, int itemCount)
         {
             return Cache.ZeroFormatterLargeItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost("api/operation/MsgPackCliSmallItem")]
+        public MsgPackCliSmallItem[] Operation([FromBody] MsgPackCliSmallItem[] items, int itemCount)
+        {
+            return Cache.MsgPackCliSmallItems.Take(itemCount).ToArray();
+        }
+
+        [HttpPost("api/operation/MsgPackCliLargeItem")]
+        public MsgPackCliLargeItem[] Operation([FromBody] MsgPackCliLargeItem[] items, int itemCount)
+        {
+            return Cache.MsgPackCliLargeItems.Take(itemCount).ToArray();
         }
     }
 
@@ -100,7 +112,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public MessagePackInputFormatter()
         {
-            SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/x-msgpack");
         }
     }
@@ -114,7 +125,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public MessagePackOutputFormatter()
         {
-            SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/x-msgpack");
         }
     }
@@ -138,7 +148,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public ZeroFormatterInputFormatter()
         {
-            SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/x-zeroformatter");
         }
     }
@@ -160,8 +169,41 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
         public ZeroFormatterOutputFormatter()
         {
-            SupportedMediaTypes.Clear();
             SupportedMediaTypes.Add("application/x-zeroformatter");
+        }
+    }
+
+    public class MsgPackCliInputFormatter<T>: InputFormatter
+    {
+        private readonly MsgPack.Serialization.MessagePackSerializer<T[]> _serializer =
+            MsgPack.Serialization.MessagePackSerializer.Get<T[]>();
+
+        public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
+        {
+            var result = await _serializer.UnpackAsync(context.HttpContext.Request.Body);
+            return InputFormatterResult.Success(result);
+        }
+
+        public MsgPackCliInputFormatter()
+        {
+            SupportedMediaTypes.Add("application/x-msgpack");
+        }
+    }
+
+    public class MsgPackCliOutputFormatter<T>: OutputFormatter
+    {
+        private readonly MsgPack.Serialization.MessagePackSerializer<T[]> _serializer =
+            MsgPack.Serialization.MessagePackSerializer.Get<T[]>();
+
+        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
+        {
+            var typedValue = (T[]) context.Object;
+            return _serializer.PackAsync(context.HttpContext.Response.Body, typedValue);
+        }
+
+        public MsgPackCliOutputFormatter()
+        {
+            SupportedMediaTypes.Add("application/x-msgpack");
         }
     }
 
@@ -267,6 +309,26 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
 
                                     opt.OutputFormatters.Clear();
                                     opt.OutputFormatters.Add(new ZeroFormatterOutputFormatter<T>());
+                                });
+        }
+    }
+
+    public class MsgPackCliAspNetCoreService<T>: AspNetCoreService
+    {
+        public MsgPackCliAspNetCoreService(int port)
+            : base(port)
+        {
+        }
+
+        protected override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvcCore(opt =>
+                                {
+                                    opt.InputFormatters.Clear();
+                                    opt.InputFormatters.Add(new MsgPackCliInputFormatter<T>());
+
+                                    opt.OutputFormatters.Clear();
+                                    opt.OutputFormatters.Add(new MsgPackCliOutputFormatter<T>());
                                 });
         }
     }

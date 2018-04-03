@@ -568,4 +568,67 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
             ZeroFormatterSerializer.Serialize(stream, ItemsToSend);
         }
     }
+
+    public class MsgPackCliHttpClientClient<T>: HttpClientRestClientBase<T>
+    {
+        public MsgPackCliHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override MediaTypeFormatter MediaTypeFormatter { get; } = new MsgPackCliMediaTypeFormatter<T>();
+    }
+
+    public class MsgPackCliHttpWebRequestClient<T>: HttpWebRequestClientBase<T>
+    {
+        private readonly MsgPack.Serialization.MessagePackSerializer<T[]> _serializer =
+            MsgPack.Serialization.MessagePackSerializer.Get<T[]>();
+
+        public MsgPackCliHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/x-msgpack";
+
+        protected override void SerializeItems(Stream stream, T[] items)
+        {
+            _serializer.Pack(stream, items);
+        }
+
+        protected override IReadOnlyCollection<T> Deserialize(Stream stream)
+        {
+            return _serializer.Unpack(stream);
+        }
+    }
+
+    public class MsgPackCliPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
+    {
+        public MsgPackCliPrecomputedHttpClientClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/x-msgpack";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            MsgPack.Serialization.MessagePackSerializer.Get<T[]>().Pack(stream, ItemsToSend);
+        }
+    }
+
+    public class MsgPackCliPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
+    {
+        public MsgPackCliPrecomputedHttpWebRequestClient(int port, int itemCount)
+            : base(port, itemCount)
+        {
+        }
+
+        protected override string RequestContentType => "application/x-msgpack";
+
+        protected override void SerializeItems(Stream stream)
+        {
+            MsgPack.Serialization.MessagePackSerializer.Get<T[]>().Pack(stream, ItemsToSend);
+        }
+    }
 }

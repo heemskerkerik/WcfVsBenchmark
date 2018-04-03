@@ -13,6 +13,8 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public static readonly MessagePackLargeItem[] MessagePackLargeItems = new Fixture().CreateMany<MessagePackLargeItem>(count: 1000).ToArray();
         public static readonly ZeroFormatterSmallItem[] ZeroFormatterSmallItems = Enumerable.Range(0, 1000).Select(_ => new ZeroFormatterSmallItem { Id = Guid.NewGuid() }).ToArray();
         public static readonly ZeroFormatterLargeItem[] ZeroFormatterLargeItems = new Fixture().CreateMany<ZeroFormatterLargeItem>(count: 1000).ToArray();
+        public static readonly MsgPackCliSmallItem[] MsgPackCliSmallItems = Enumerable.Range(0, 1000).Select(_ => new MsgPackCliSmallItem { Id = Guid.NewGuid() }).ToArray();
+        public static readonly MsgPackCliLargeItem[] MsgPackCliLargeItems = new Fixture().CreateMany<MsgPackCliLargeItem>(count: 1000).ToArray();
 
         public static T[] Get<T>()
         {
@@ -28,6 +30,10 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
                 return (T[]) (object) ZeroFormatterSmallItems;
             if(typeof(T) == typeof(ZeroFormatterLargeItem))
                 return (T[]) (object) ZeroFormatterLargeItems;
+            if(typeof(T) == typeof(MsgPackCliSmallItem))
+                return (T[]) (object) MsgPackCliSmallItems;
+            if(typeof(T) == typeof(MsgPackCliLargeItem))
+                return (T[]) (object) MsgPackCliLargeItems;
 
             throw new InvalidOperationException();
         }
