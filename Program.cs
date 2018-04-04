@@ -422,24 +422,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedWebApiJsonNetHttpClient()
-        {
-            return _smallWebApiJsonNetSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<SmallItem>> SmallPrecomputedWebApiJsonNetHttpClientAsync()
-        {
-            return _smallWebApiJsonNetSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedWebApiJsonNetHttpWebRequest()
-        {
-            return _smallWebApiJsonNetSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<MessagePackSmallItem> SmallWebApiMessagePackHttpClient()
         {
             return _smallWebApiMessagePackSuite.InvokeHttpClient();
@@ -458,24 +440,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<MessagePackSmallItem> SmallPrecomputedWebApiMessagePackHttpClient()
-        {
-            return _smallWebApiMessagePackSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MessagePackSmallItem>> SmallPrecomputedWebApiMessagePackHttpClientAsync()
-        {
-            return _smallWebApiMessagePackSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MessagePackSmallItem> SmallPrecomputedWebApiMessagePackHttpWebRequest()
-        {
-            return _smallWebApiMessagePackSuite.InvokePrecomputedHttpWebRequest();
-        }
-        
-        [Benchmark]
         public IReadOnlyCollection<MsgPackCliSmallItem> SmallWebApiMsgPackCliHttpClient()
         {
             return _smallWebApiMsgPackCliSuite.InvokeHttpClient();
@@ -491,24 +455,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<MsgPackCliSmallItem> SmallWebApiMsgPackCliHttpWebRequest()
         {
             return _smallWebApiMsgPackCliSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliSmallItem> SmallPrecomputedWebApiMsgPackCliHttpClient()
-        {
-            return _smallWebApiMsgPackCliSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MsgPackCliSmallItem>> SmallPrecomputedWebApiMsgPackCliHttpClientAsync()
-        {
-            return _smallWebApiMsgPackCliSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliSmallItem> SmallPrecomputedWebApiMsgPackCliHttpWebRequest()
-        {
-            return _smallWebApiMsgPackCliSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -530,24 +476,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedWebApiXmlHttpClient()
-        {
-            return _smallWebApiXmlSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<SmallItem>> SmallPrecomputedWebApiXmlHttpClientAsync()
-        {
-            return _smallWebApiXmlSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedWebApiXmlHttpWebRequest()
-        {
-            return _smallWebApiXmlSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<SmallItem> SmallWebApiUtf8JsonHttpClient()
         {
             return _smallWebApiUtf8JsonSuite.InvokeHttpClient();
@@ -563,24 +491,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<SmallItem> SmallWebApiUtf8JsonHttpWebRequest()
         {
             return _smallWebApiUtf8JsonSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedWebApiUtf8JsonHttpClient()
-        {
-            return _smallWebApiUtf8JsonSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<SmallItem>> SmallPrecomputedWebApiUtf8JsonHttpClientAsync()
-        {
-            return _smallWebApiUtf8JsonSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedWebApiUtf8JsonHttpWebRequest()
-        {
-            return _smallWebApiUtf8JsonSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -602,24 +512,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterSmallItem> SmallPrecomputedWebApiZeroFormatterHttpClient()
-        {
-            return _smallWebApiZeroFormatterSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<ZeroFormatterSmallItem>> SmallPrecomputedWebApiZeroFormatterHttpClientAsync()
-        {
-            return _smallWebApiZeroFormatterSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterSmallItem> SmallPrecomputedWebApiZeroFormatterHttpWebRequest()
-        {
-            return _smallWebApiZeroFormatterSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<SmallItem> SmallAspNetCoreJsonNetHttpClient()
         {
             return _smallAspNetCoreJsonNetSuite.InvokeHttpClient();
@@ -635,24 +527,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<SmallItem> SmallAspNetCoreJsonNetHttpWebRequest()
         {
             return _smallAspNetCoreJsonNetSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedAspNetCoreJsonNetHttpClient()
-        {
-            return _smallAspNetCoreJsonNetSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<SmallItem>> SmallPrecomputedAspNetCoreJsonNetHttpClientAsync()
-        {
-            return _smallAspNetCoreJsonNetSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedAspNetCoreJsonNetHttpWebRequest()
-        {
-            return _smallAspNetCoreJsonNetSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -674,24 +548,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<MessagePackSmallItem> SmallPrecomputedAspNetCoreMessagePackHttpClient()
-        {
-            return _smallAspNetCoreMessagePackSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MessagePackSmallItem>> SmallPrecomputedAspNetCoreMessagePackHttpClientAsync()
-        {
-            return _smallAspNetCoreMessagePackSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MessagePackSmallItem> SmallPrecomputedAspNetCoreMessagePackHttpWebRequest()
-        {
-            return _smallAspNetCoreMessagePackSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<MsgPackCliSmallItem> SmallAspNetCoreMsgPackCliHttpClient()
         {
             return _smallAspNetCoreMsgPackCliSuite.InvokeHttpClient();
@@ -707,24 +563,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<MsgPackCliSmallItem> SmallAspNetCoreMsgPackCliHttpWebRequest()
         {
             return _smallAspNetCoreMsgPackCliSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliSmallItem> SmallPrecomputedAspNetCoreMsgPackCliHttpClient()
-        {
-            return _smallAspNetCoreMsgPackCliSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MsgPackCliSmallItem>> SmallPrecomputedAspNetCoreMsgPackCliHttpClientAsync()
-        {
-            return _smallAspNetCoreMsgPackCliSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliSmallItem> SmallPrecomputedAspNetCoreMsgPackCliHttpWebRequest()
-        {
-            return _smallAspNetCoreMsgPackCliSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -746,24 +584,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedAspNetCoreXmlHttpClient()
-        {
-            return _smallAspNetCoreXmlSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<SmallItem>> SmallPrecomputedAspNetCoreXmlHttpClientAsync()
-        {
-            return _smallAspNetCoreXmlSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedAspNetCoreXmlHttpWebRequest()
-        {
-            return _smallAspNetCoreXmlSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<SmallItem> SmallAspNetCoreUtf8JsonHttpClient()
         {
             return _smallAspNetCoreUtf8JsonSuite.InvokeHttpClient();
@@ -782,24 +602,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedAspNetCoreUtf8JsonHttpClient()
-        {
-            return _smallAspNetCoreUtf8JsonSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<SmallItem>> SmallPrecomputedAspNetCoreUtf8JsonHttpClientAsync()
-        {
-            return _smallAspNetCoreUtf8JsonSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<SmallItem> SmallPrecomputedAspNetCoreUtf8JsonHttpWebRequest()
-        {
-            return _smallAspNetCoreUtf8JsonSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<ZeroFormatterSmallItem> SmallAspNetCoreZeroFormatterHttpClient()
         {
             return _smallAspNetCoreZeroFormatterSuite.InvokeHttpClient();
@@ -815,24 +617,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<ZeroFormatterSmallItem> SmallAspNetCoreZeroFormatterHttpWebRequest()
         {
             return _smallAspNetCoreZeroFormatterSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterSmallItem> SmallPrecomputedAspNetCoreZeroFormatterHttpClient()
-        {
-            return _smallAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<ZeroFormatterSmallItem>> SmallPrecomputedAspNetCoreZeroFormatterHttpClientAsync()
-        {
-            return _smallAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterSmallItem> SmallPrecomputedAspNetCoreZeroFormatterHttpWebRequest()
-        {
-            return _smallAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -890,24 +674,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedWebApiJsonNetHttpClient()
-        {
-            return _largeWebApiJsonNetSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedWebApiJsonNetHttpClientAsync()
-        {
-            return _largeWebApiJsonNetSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedWebApiJsonNetHttpWebRequest()
-        {
-            return _largeWebApiJsonNetSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<MessagePackLargeItem> LargeWebApiMessagePackHttpClient()
         {
             return _largeWebApiMessagePackSuite.InvokeHttpClient();
@@ -926,24 +692,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<MessagePackLargeItem> LargePrecomputedWebApiMessagePackHttpClient()
-        {
-            return _largeWebApiMessagePackSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MessagePackLargeItem>> LargePrecomputedWebApiMessagePackHttpClientAsync()
-        {
-            return _largeWebApiMessagePackSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MessagePackLargeItem> LargePrecomputedWebApiMessagePackHttpWebRequest()
-        {
-            return _largeWebApiMessagePackSuite.InvokePrecomputedHttpWebRequest();
-        }
-        
-        [Benchmark]
         public IReadOnlyCollection<MsgPackCliLargeItem> LargeWebApiMsgPackCliHttpClient()
         {
             return _largeWebApiMsgPackCliSuite.InvokeHttpClient();
@@ -959,24 +707,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<MsgPackCliLargeItem> LargeWebApiMsgPackCliHttpWebRequest()
         {
             return _largeWebApiMsgPackCliSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliLargeItem> LargePrecomputedWebApiMsgPackCliHttpClient()
-        {
-            return _largeWebApiMsgPackCliSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MsgPackCliLargeItem>> LargePrecomputedWebApiMsgPackCliHttpClientAsync()
-        {
-            return _largeWebApiMsgPackCliSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliLargeItem> LargePrecomputedWebApiMsgPackCliHttpWebRequest()
-        {
-            return _largeWebApiMsgPackCliSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -998,30 +728,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedWebApiXmlHttpClient()
-        {
-            return _largeWebApiXmlSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedWebApiXmlHttpClientAsync()
-        {
-            return _largeWebApiXmlSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedWebApiXmlHttpWebRequest()
-        {
-            return _largeWebApiXmlSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargeWebApiUtf8JsonHttpClient()
-        {
-            return _largeWebApiUtf8JsonSuite.InvokeHttpClient();
-        }
-
-        [Benchmark]
         public Task<IReadOnlyCollection<LargeItem>> LargeWebApiUtf8JsonHttpClientAsync()
         {
             return _largeWebApiUtf8JsonSuite.InvokeHttpClientAsync();
@@ -1031,24 +737,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<LargeItem> LargeWebApiUtf8JsonHttpWebRequest()
         {
             return _largeWebApiUtf8JsonSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedWebApiUtf8JsonHttpClient()
-        {
-            return _largeWebApiUtf8JsonSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedWebApiUtf8JsonHttpClientAsync()
-        {
-            return _largeWebApiUtf8JsonSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedWebApiUtf8JsonHttpWebRequest()
-        {
-            return _largeWebApiUtf8JsonSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -1070,24 +758,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterLargeItem> LargePrecomputedWebApiZeroFormatterHttpClient()
-        {
-            return _largeWebApiZeroFormatterSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<ZeroFormatterLargeItem>> LargePrecomputedWebApiZeroFormatterHttpClientAsync()
-        {
-            return _largeWebApiZeroFormatterSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterLargeItem> LargePrecomputedWebApiZeroFormatterHttpWebRequest()
-        {
-            return _largeWebApiZeroFormatterSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreJsonNetHttpClient()
         {
             return _largeAspNetCoreJsonNetSuite.InvokeHttpClient();
@@ -1103,24 +773,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreJsonNetHttpWebRequest()
         {
             return _largeAspNetCoreJsonNetSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreJsonNetHttpClient()
-        {
-            return _largeAspNetCoreJsonNetSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedAspNetCoreJsonNetHttpClientAsync()
-        {
-            return _largeAspNetCoreJsonNetSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreJsonNetHttpWebRequest()
-        {
-            return _largeAspNetCoreJsonNetSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -1142,24 +794,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<MessagePackLargeItem> LargePrecomputedAspNetCoreMessagePackHttpClient()
-        {
-            return _largeAspNetCoreMessagePackSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MessagePackLargeItem>> LargePrecomputedAspNetCoreMessagePackHttpClientAsync()
-        {
-            return _largeAspNetCoreMessagePackSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MessagePackLargeItem> LargePrecomputedAspNetCoreMessagePackHttpWebRequest()
-        {
-            return _largeAspNetCoreMessagePackSuite.InvokePrecomputedHttpWebRequest();
-        }
-        
-        [Benchmark]
         public IReadOnlyCollection<MsgPackCliLargeItem> LargeAspNetCoreMsgPackCliHttpClient()
         {
             return _largeAspNetCoreMsgPackCliSuite.InvokeHttpClient();
@@ -1175,24 +809,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<MsgPackCliLargeItem> LargeAspNetCoreMsgPackCliHttpWebRequest()
         {
             return _largeAspNetCoreMsgPackCliSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliLargeItem> LargePrecomputedAspNetCoreMsgPackCliHttpClient()
-        {
-            return _largeAspNetCoreMsgPackCliSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<MsgPackCliLargeItem>> LargePrecomputedAspNetCoreMsgPackCliHttpClientAsync()
-        {
-            return _largeAspNetCoreMsgPackCliSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<MsgPackCliLargeItem> LargePrecomputedAspNetCoreMsgPackCliHttpWebRequest()
-        {
-            return _largeAspNetCoreMsgPackCliSuite.InvokePrecomputedHttpWebRequest();
         }
 
         [Benchmark]
@@ -1214,24 +830,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreXmlHttpClient()
-        {
-            return _largeAspNetCoreXmlSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedAspNetCoreXmlHttpClientAsync()
-        {
-            return _largeAspNetCoreXmlSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreXmlHttpWebRequest()
-        {
-            return _largeAspNetCoreXmlSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<LargeItem> LargeAspNetCoreUtf8JsonHttpClient()
         {
             return _largeAspNetCoreUtf8JsonSuite.InvokeHttpClient();
@@ -1250,24 +848,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
 
         [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreUtf8JsonHttpClient()
-        {
-            return _largeAspNetCoreUtf8JsonSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<LargeItem>> LargePrecomputedAspNetCoreUtf8JsonHttpClientAsync()
-        {
-            return _largeAspNetCoreUtf8JsonSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<LargeItem> LargePrecomputedAspNetCoreUtf8JsonHttpWebRequest()
-        {
-            return _largeAspNetCoreUtf8JsonSuite.InvokePrecomputedHttpWebRequest();
-        }
-
-        [Benchmark]
         public IReadOnlyCollection<ZeroFormatterLargeItem> LargeAspNetCoreZeroFormatterHttpClient()
         {
             return _largeAspNetCoreZeroFormatterSuite.InvokeHttpClient();
@@ -1283,24 +863,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         public IReadOnlyCollection<ZeroFormatterLargeItem> LargeAspNetCoreZeroFormatterHttpWebRequest()
         {
             return _largeAspNetCoreZeroFormatterSuite.InvokeHttpWebRequest();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterLargeItem> LargePrecomputedAspNetCoreZeroFormatterHttpClient()
-        {
-            return _largeAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpClient();
-        }
-
-        [Benchmark]
-        public Task<IReadOnlyCollection<ZeroFormatterLargeItem>> LargePrecomputedAspNetCoreZeroFormatterHttpClientAsync()
-        {
-            return _largeAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpClientAsync();
-        }
-
-        [Benchmark]
-        public IReadOnlyCollection<ZeroFormatterLargeItem> LargePrecomputedAspNetCoreZeroFormatterHttpWebRequest()
-        {
-            return _largeAspNetCoreZeroFormatterSuite.InvokePrecomputedHttpWebRequest();
         }
 
         private TextWcfService<SmallItem> _smallTextWcfService;

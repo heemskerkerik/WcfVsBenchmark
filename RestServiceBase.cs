@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -223,166 +222,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public abstract class PrecomputedHttpClientRestClientBase<T>: PrecomputedRestClientBase<T>
-    {
-        private readonly HttpClient _client;
-        private MediaTypeHeaderValue _contentTypeHeader;
-
-        protected PrecomputedHttpClientRestClientBase(int port, int itemCount)
-            : base(port, itemCount)
-        {
-            _client = new HttpClient
-                      {
-                          BaseAddress = new Uri($"http://localhost:{Port}"),
-                          DefaultRequestHeaders =
-                          {
-                              ConnectionClose = false,
-                              ExpectContinue = false,
-                          }
-                      };
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            _contentTypeHeader = new MediaTypeHeaderValue(RequestContentType);
-        }
-
-        public override IReadOnlyCollection<T> Invoke()
-        {
-            var response = _client.PostAsync(RelativeUri, CreateHttpContent())
-                                  .Result;
-            response.EnsureSuccessStatusCode();
-
-            response.Content.ReadAsByteArrayAsync().Wait();
-
-            return new List<T>();
-        }
-
-        private HttpContent CreateHttpContent()
-        {
-            return new ByteArrayContent(DataToSend)
-                   {
-                       Headers =
-                       {
-                           ContentType = _contentTypeHeader,
-                       }
-                   };
-        }
-
-        public async Task<IReadOnlyCollection<T>> InvokeAsync()
-        {
-            var request = new HttpRequestMessage();
-
-            var response = await _client.PostAsync(RelativeUri, CreateHttpContent());
-            response.EnsureSuccessStatusCode();
-
-            using(var stream = await response.Content.ReadAsStreamAsync())
-            {
-                stream.CopyTo(Stream.Null);
-            }
-
-            return new List<T>();
-        }
-    }
-
-    public class JsonNetPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
-    {
-        public JsonNetPrecomputedHttpClientClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/json";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            using(var writer = new JsonTextWriter(new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))))
-                new JsonSerializer().Serialize(writer, ItemsToSend);
-        }
-    }
-
-    public class MessagePackPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
-    {
-        public MessagePackPrecomputedHttpClientClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/x-msgpack";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            MessagePackSerializer.Serialize(stream, ItemsToSend);
-        }
-    }
-
-    public abstract class PrecomputedHttpWebRequestRestClientBase<T>: PrecomputedRestClientBase<T>
-    {
-        protected PrecomputedHttpWebRequestRestClientBase(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        public override IReadOnlyCollection<T> Invoke()
-        {
-            var request = WebRequest.CreateHttp(AbsoluteUri);
-            request.Method = HttpMethods.Post;
-            request.ContentType = RequestContentType;
-            request.SendChunked = false;
-            request.KeepAlive = true;
-            request.ContentLength = DataToSend.Length;
-
-            using(var requestStream = request.GetRequestStream())
-            {
-                requestStream.Write(DataToSend, 0, DataToSend.Length);
-            }
-
-            using(var response = (HttpWebResponse) request.GetResponse())
-            using(var responseStream = response.GetResponseStream())
-            {
-                if(response.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Response status was not 200 OK but {response.StatusCode}.");
-
-                responseStream.CopyTo(Stream.Null);
-
-                return new List<T>();
-            }
-        }
-    }
-
-    public class JsonNetPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
-    {
-        public JsonNetPrecomputedHttpWebRequestClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/json";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            using(var writer = new JsonTextWriter(new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))))
-                new JsonSerializer().Serialize(writer, ItemsToSend);
-        }
-    }
-
-    public class MessagePackPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
-    {
-        public MessagePackPrecomputedHttpWebRequestClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/x-msgpack";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            MessagePackSerializer.Serialize(stream, ItemsToSend);
-        }
-    }
-
     public class XmlHttpClientClient<T>: HttpClientRestClientBase<T>
     {
         public XmlHttpClientClient(int port, int itemCount)
@@ -417,38 +256,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class XmlPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
-    {
-        public XmlPrecomputedHttpClientClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/xml";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            using(var writer = XmlWriter.Create(stream))
-                new XmlSerializer(typeof(T[])).Serialize(writer, ItemsToSend);
-        }
-    }
-
-    public class XmlPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
-    {
-        public XmlPrecomputedHttpWebRequestClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/xml";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            using(var writer = XmlWriter.Create(stream))
-                new XmlSerializer(typeof(T[])).Serialize(writer, ItemsToSend);
-        }
-    }
-
     public class Utf8JsonHttpClientClient<T>: HttpClientRestClientBase<T>
     {
         public Utf8JsonHttpClientClient(int port, int itemCount)
@@ -476,36 +283,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         protected override IReadOnlyCollection<T> Deserialize(Stream stream)
         {
             return Utf8Json.JsonSerializer.Deserialize<T[]>(stream);
-        }
-    }
-
-    public class Utf8JsonPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
-    {
-        public Utf8JsonPrecomputedHttpClientClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/json";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            Utf8Json.JsonSerializer.Serialize(stream, ItemsToSend);
-        }
-    }
-
-    public class Utf8JsonPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
-    {
-        public Utf8JsonPrecomputedHttpWebRequestClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/json";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            Utf8Json.JsonSerializer.Serialize(stream, ItemsToSend);
         }
     }
 
@@ -539,36 +316,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         }
     }
 
-    public class ZeroFormatterPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
-    {
-        public ZeroFormatterPrecomputedHttpClientClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/x-zeroformatter";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            ZeroFormatterSerializer.Serialize(stream, ItemsToSend);
-        }
-    }
-
-    public class ZeroFormatterPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
-    {
-        public ZeroFormatterPrecomputedHttpWebRequestClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/x-zeroformatter";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            ZeroFormatterSerializer.Serialize(stream, ItemsToSend);
-        }
-    }
-
     public class MsgPackCliHttpClientClient<T>: HttpClientRestClientBase<T>
     {
         public MsgPackCliHttpClientClient(int port, int itemCount)
@@ -599,36 +346,6 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         protected override IReadOnlyCollection<T> Deserialize(Stream stream)
         {
             return _serializer.Unpack(stream);
-        }
-    }
-
-    public class MsgPackCliPrecomputedHttpClientClient<T>: PrecomputedHttpClientRestClientBase<T>
-    {
-        public MsgPackCliPrecomputedHttpClientClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/x-msgpack";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            MsgPack.Serialization.MessagePackSerializer.Get<T[]>().Pack(stream, ItemsToSend);
-        }
-    }
-
-    public class MsgPackCliPrecomputedHttpWebRequestClient<T>: PrecomputedHttpWebRequestRestClientBase<T>
-    {
-        public MsgPackCliPrecomputedHttpWebRequestClient(int port, int itemCount)
-            : base(port, itemCount)
-        {
-        }
-
-        protected override string RequestContentType => "application/x-msgpack";
-
-        protected override void SerializeItems(Stream stream)
-        {
-            MsgPack.Serialization.MessagePackSerializer.Get<T[]>().Pack(stream, ItemsToSend);
         }
     }
 }
