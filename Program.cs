@@ -31,7 +31,7 @@ namespace WcfVsWebApiVsAspNetCoreBenchmark
         {
             public Config()
             {
-                Add(Job.Clr.With(InProcessToolchain.Instance));
+                Add(Job.Clr);
                 Add(ConsoleLogger.Default);
                 Add(TargetMethodColumn.Method, new ParamColumn(nameof(ItemCount)), StatisticColumn.Mean, StatisticColumn.P95);
                 Add(MemoryDiagnoser.Default.GetColumnProvider());
